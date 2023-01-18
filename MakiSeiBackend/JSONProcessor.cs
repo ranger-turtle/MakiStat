@@ -25,7 +25,7 @@ namespace MakiSeiBackend
 		{
 			string jsonNoExtFileName = Path.GetFileNameWithoutExtension(jsonPath);
 			string? directory = Path.GetDirectoryName(jsonPath);
-			string finalJsonPath = langCode == "default" ? $"{directory}/{jsonNoExtFileName}.json" : $"{directory}/{jsonNoExtFileName}.{langCode}.json";
+			string finalJsonPath = $"{directory}/{jsonNoExtFileName}.{langCode}.json";
 			if (!File.Exists(finalJsonPath) && File.Exists(jsonPath))
 				throw new LanguageJsonNotFoundException($"HTML page data with language code \"{langCode}\" not found.");
 			return ReadJSONModelFromJSONFile(finalJsonPath);

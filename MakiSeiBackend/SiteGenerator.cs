@@ -25,7 +25,7 @@ namespace MakiSeiBackend
 			string filename = Path.GetFileName(jsonFilePath);
 			string[] fragments = filename.Split('.');
 			//if there are two fragments, return lang code
-			return fragments.Length > 2 ? fragments[1] : "default";
+			return fragments[^2];
 		}
 
 		public void GenerateSite(string skeletonPath)
@@ -52,20 +52,14 @@ namespace MakiSeiBackend
 					{
 						if (ext[0] != '_') //It is not a partial
 						{
-							try
-							{
-								string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, langCode);
+							string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, langCode);
 
-								string langFolder = langCode == "default" ? string.Empty : $"/{langCode}";
-								string destDir = $"{outputDirectory}{langFolder}/{Path.GetDirectoryName(relativeFilePath)}";
-								_ = Directory.CreateDirectory(destDir);
-								string fileDest = $"{outputDirectory}{langFolder}/{relativeFilePath}";
-								File.WriteAllText(fileDest, generatedPage);
-							}
-							catch (LanguageJsonNotFoundException ljnfe)
-							{
-								Trace.TraceWarning($"Error during processing file {path}: {ljnfe}");
-							}
+							string langFolder = langCode == "default" ? string.Empty : $"/{langCode}";
+							string rootDir = $"{outputDirectory}{langFolder}";
+							string destDir = $"{rootDir}/{Path.GetDirectoryName(relativeFilePath)}";
+							_ = Directory.CreateDirectory(destDir);
+							string fileDest = $"{rootDir}/{relativeFilePath}";
+							File.WriteAllText(fileDest, generatedPage);
 						}
 					}
 					else if (ext != ".json")

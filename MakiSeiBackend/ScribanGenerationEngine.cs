@@ -31,6 +31,7 @@ namespace MakiSeiBackend
 			ScriptObject globalScriptObject = new()
 			{
 				{ "global", globalData },
+				{ "uni_page", JsonProcessor.ReadJSONModelFromJSONFile($"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json") },
 				{ "page", JsonProcessor.ReadLangJSONModelFromJSONFile($"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json", languageCode) },
 				{ "page_file", htmlPagePath },
 				{ "lang_code", languageCode },
