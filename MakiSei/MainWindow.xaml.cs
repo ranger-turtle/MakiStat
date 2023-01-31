@@ -1,6 +1,7 @@
-﻿//#define RELEASE
+﻿#define RELEASE
 
 using MakiSeiBackend;
+using Microsoft.Win32;
 using System;
 using System.Windows;
 
@@ -11,28 +12,35 @@ namespace MakiSei
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private SiteGenerator siteGenerator = new();
-
 		public MainWindow()
 		{
 			InitializeComponent();
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void GenerateBtn_Click(object sender, RoutedEventArgs e)
 		{
-#if RELEASE
-			try
+			ProgressWindow progressWindow = new(PathTextBox.Text)
 			{
-#endif
-				siteGenerator.GenerateSite(PathTextBox.Text);
+				Owner = this
+			};
+			bool? result = progressWindow.ShowDialog();
+			if (result == true)
+			{
 				_ = MessageBox.Show("Website generated!", "Info", MessageBoxButton.OK, icon: MessageBoxImage.Information);
-#if RELEASE
 			}
-			catch (Exception ex)
+		}
+
+		private void SearchBtn_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog fileDialog = new();
+			fileDialog.Filter = "Scriban HTML Files (*.html, *.sbn-html)|*.html;*.sbn-html";
+
+			bool? result = fileDialog.ShowDialog();
+
+			if (result == true)
 			{
-				_ = MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, icon: MessageBoxImage.Error);
+				PathTextBox.Text = fileDialog.FileName;
 			}
-#endif
 		}
 	}
 }

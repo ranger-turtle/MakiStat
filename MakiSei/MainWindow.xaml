@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MakiSei"
         mc:Ignorable="d"
-        Title="MakiSei Static Site Generation" Height="450" Width="800">
+        Title="MakiSei Static Site Generation" Height="172" Width="775">
 	<Grid>
-		<Button Content="Generate!" HorizontalAlignment="Left" Margin="40,55,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-		<TextBox x:Name="PathTextBox" HorizontalAlignment="Left" Margin="40,26,0,0" Text="C:/Users/Austin/Desktop/multilingual mizutamasoap.com/_skeleton.html" TextWrapping="Wrap" VerticalAlignment="Top" Width="734" Height="24"/>
+		<Button Content="Search" HorizontalAlignment="Left" Margin="692,49,0,0" VerticalAlignment="Top" Width="50" Click="SearchBtn_Click"/>
+		<Button Content="Generate!" HorizontalAlignment="Left" Margin="38,76,0,0" VerticalAlignment="Top" Click="GenerateBtn_Click"/>
+		<TextBox x:Name="PathTextBox" HorizontalAlignment="Left" Margin="38,47,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="637" Height="24"/>
+		<Label Content="Enter the skeleton HTML path:" HorizontalAlignment="Left" Margin="38,16,0,0" VerticalAlignment="Top" Width="265"/>
 	</Grid>
 </Window>

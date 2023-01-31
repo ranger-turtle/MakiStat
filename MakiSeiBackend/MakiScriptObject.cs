@@ -33,6 +33,12 @@ namespace MakiSeiBackend
 			Trace.WriteLine("Pop");
 			return result;
 		}
+		private static void LoadPartialDataToScriptObject(string templatePath, string langCode, ScriptObject scriptObject)
+		{
+			string partialDataPath = $"{Path.GetDirectoryName(templatePath)}/{Path.GetFileNameWithoutExtension(templatePath)}.json";
+			Dictionary<string, object> partialData = JsonProcessor.ReadLangJSONModelFromJSONFile(partialDataPath, langCode);
+			scriptObject["partial"] = partialData;
+		}
 		public static void LoadUniversalModelToScriptObject(string modelPath, ScriptObject scriptObject)
 		{
 			modelPath = Path.GetDirectoryName(modelPath) + '/' + Path.GetFileNameWithoutExtension(modelPath) + ".json";
@@ -82,7 +88,7 @@ namespace MakiSeiBackend
 			}
 		}
 
-		public static string LoadPartial(string templatePath, Dictionary<string, object> model, Dictionary<string, object> uniModel = null)
+		public static string LoadPartial(string templatePath, object model, object uniModel = null)
 		{
 			CheckExtension(ref templatePath, ".html");
 
@@ -104,13 +110,6 @@ namespace MakiSeiBackend
 				Trace.TraceWarning($"Error during processing file {templatePath}: {ljnfe}");
 				return $"Could not load partial {templatePath}";
 			}
-		}
-
-		private static void LoadPartialDataToScriptObject(string templatePath, string langCode, ScriptObject scriptObject)
-		{
-			string partialDataPath = $"{Path.GetDirectoryName(templatePath)}/{Path.GetFileNameWithoutExtension(templatePath)}.json";
-			Dictionary<string, object> partialData = JsonProcessor.ReadLangJSONModelFromJSONFile(partialDataPath, langCode);
-			scriptObject["partial"] = partialData;
 		}
 
 		public static object LoadModel(string modelPath, bool multilingual = true)

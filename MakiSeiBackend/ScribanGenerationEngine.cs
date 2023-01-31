@@ -27,14 +27,17 @@ namespace MakiSeiBackend
 
 			string htmlPageDirectory = Path.GetDirectoryName(htmlPagePath);
 			string htmlPageNameWithoutExt = Path.GetFileNameWithoutExtension(htmlPagePath);
+			string potentialUniversalModelPath = $"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json";
 
 			ScriptObject globalScriptObject = new()
 			{
 				{ "global", globalData },
-				{ "uni_page", JsonProcessor.ReadJSONModelFromJSONFile($"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json") },
+				{ "uni_page", File.Exists(potentialUniversalModelPath) ? JsonProcessor.ReadJSONModelFromJSONFile(potentialUniversalModelPath) : null },
 				{ "page", JsonProcessor.ReadLangJSONModelFromJSONFile($"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json", languageCode) },
+				{ "current_page", htmlPageNameWithoutExt },
 				{ "page_file", htmlPagePath },
 				{ "lang_code", languageCode },
+				{ "lang_dir_path", languageCode != "default" ? "/" + languageCode : null },
 				{ "main_path", _mainPath },
 				{ "global_path", _globalPath }
 			};
@@ -43,11 +46,13 @@ namespace MakiSeiBackend
 			Template template = Template.Parse(skeletonHtml);
 
 			TemplateContextInstance.PushGlobal(globalScriptObject);
+			Trace.WriteLine($"Processed page: {htmlPagePath}");
 			Trace.WriteLine("Push");
 			string result = template.Render(TemplateContextInstance);
 			TemplateContextInstance.PopGlobal();
 			Trace.WriteLine("Pop");
 
+			TemplateContextInstance.Reset();
 			return result;
 		}
 	}
