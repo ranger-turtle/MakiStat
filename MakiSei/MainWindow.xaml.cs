@@ -12,21 +12,24 @@ namespace MakiSei
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public SiteGenerator SiteGenerator { get; private set; }
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			SiteGenerator = new SiteGenerator();
 		}
 
 		private void GenerateBtn_Click(object sender, RoutedEventArgs e)
 		{
-			ProgressWindow progressWindow = new(PathTextBox.Text)
+			ProgressWindow progressWindow = new(SiteGenerator, PathTextBox.Text)
 			{
 				Owner = this
 			};
 			bool? result = progressWindow.ShowDialog();
 			if (result == true)
 			{
-				_ = MessageBox.Show("Website generated!", "Info", MessageBoxButton.OK, icon: MessageBoxImage.Information);
+				_ = MessageBox.Show($"Website generated!{Environment.NewLine}Check the website.log for details.", "Info", MessageBoxButton.OK, icon: MessageBoxImage.Information);
 			}
 		}
 

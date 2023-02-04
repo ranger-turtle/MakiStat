@@ -16,8 +16,10 @@ namespace MakiSeiBackend
 #nullable enable
 		public static Dictionary<string, object>? ReadJSONModelFromJSONFile(string jsonPath)
 		{
+			if (!File.Exists(jsonPath))
+				throw new FileNotFoundException($"HTML page data \"{jsonPath}\" not found.");
 			string json = File.ReadAllText(jsonPath);
-			JsonSerializerOptions? jsonSerializeOptions = new JsonSerializerOptions() { IncludeFields = true };
+			JsonSerializerOptions? jsonSerializeOptions = new() { IncludeFields = true };
 			jsonSerializeOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
 			return JsonSerializer.Deserialize<Dictionary<string, object>>(json, jsonSerializeOptions);
 		}
@@ -26,8 +28,6 @@ namespace MakiSeiBackend
 			string jsonNoExtFileName = Path.GetFileNameWithoutExtension(jsonPath);
 			string? directory = Path.GetDirectoryName(jsonPath);
 			string finalJsonPath = $"{directory}/{jsonNoExtFileName}.{langCode}.json";
-			if (!File.Exists(finalJsonPath) && File.Exists(jsonPath))
-				throw new LanguageJsonNotFoundException($"HTML page data with language code \"{langCode}\" not found.");
 			return ReadJSONModelFromJSONFile(finalJsonPath);
 		}
 	}

@@ -6,13 +6,15 @@ using System.Threading;
 
 namespace MakiSeiBackend
 {
-	using JSONObject = Dictionary<string, object>;
+	public class WebsiteGenerationErrorException : Exception { public WebsiteGenerationErrorException(string message) : base(message) { } }
+
 	//TODO Support JSON syntax errors
 	//TODO support lacking JSON language files
 	//TODO Add modification checking to avoid re-rendering unchanged pages
+	//BONUS add choosing to render part of the website
 	public class SiteGenerator
 	{
-		private readonly IWebsiteGenerationProgressReporter progressReporter;
+		public ILogger Logger { get; private set; }
 
 		public string MainPath { get; private set; } = "_main";
 		public string GlobalPath { get; private set; } = "_global";
@@ -22,9 +24,14 @@ namespace MakiSeiBackend
 		//BONUS try using Dependency Injection
 		private readonly ITemplateEngine templateEngine;
 
-		public SiteGenerator(IWebsiteGenerationProgressReporter progressReporter)
+		private WebsiteGenerationErrorException websiteGenerationError;
+
+		private bool ErrorOccured => websiteGenerationError != null;
+
+		public SiteGenerator() : this(new FileLogger()) { }
+		public SiteGenerator(ILogger logger)
 		{
-			this.progressReporter = progressReporter;
+			Logger = logger;
 			templateEngine = new ScribanGenerationEngine(this);
 		}
 
@@ -36,18 +43,19 @@ namespace MakiSeiBackend
 			return fragments[^2];
 		}
 
-		private void ReportProgress(float progressPercent, string processedPagePath)
+		public void ReportError(string message)
 		{
-			progressReporter.ReportProgress(Convert.ToInt32(progressPercent), processedPagePath);
+			websiteGenerationError = new WebsiteGenerationErrorException(message);
 		}
 
-		public void GenerateSite(string skeletonPath)
+		public void GenerateSite(string skeletonPath, IWebsiteGenerationProgressReporter progressReporter)
 		{
 			if (skeletonPath == null || skeletonPath == string.Empty)
 				throw new FileNotFoundException($"You did not enter the path of the skeleton.{Environment.NewLine}Please give the path to the existing skeleton of the page.");
 
 			Environment.CurrentDirectory = Path.GetDirectoryName(skeletonPath);
-			string[] filesinMainFolder = Directory.GetFiles(MainPath, "*.*", new EnumerationOptions() { RecurseSubdirectories = true});
+			Logger.Open();
+			string[] filesinMainFolder = Directory.GetFiles(MainPath, "*.*", new EnumerationOptions() { RecurseSubdirectories = true });
 			string outputDirectory = "output";
 			Directory.CreateDirectory(outputDirectory);
 
@@ -56,45 +64,62 @@ namespace MakiSeiBackend
 
 			string[] jsonLanguageFilePaths = Directory.GetFiles(Environment.CurrentDirectory, $"{skeletonFileName}*.json", SearchOption.TopDirectoryOnly);
 
-			foreach (string jsonFilePath in jsonLanguageFilePaths)
+			float maxPageNumber = filesinMainFolder.Length * jsonLanguageFilePaths.Length;
+			float pageNumber = 0;
+			try
 			{
-				string langCode = ExtractLangCode(jsonFilePath);
-				JSONObject globalData = JsonProcessor.ReadJSONModelFromJSONFile(jsonFilePath);
-
-				float maxPageNumber = filesinMainFolder.Length;
-				float pageNumber = 0;
-				foreach (string path in filesinMainFolder)
+				foreach (string jsonFilePath in jsonLanguageFilePaths)
 				{
-					ProcessedPagePath = path;
-					pageNumber++;
-					ReportProgress((pageNumber / maxPageNumber) * 100, path);
+					string langCode = ExtractLangCode(jsonFilePath);
+					Dictionary<string, object> globalData = JsonProcessor.ReadJSONModelFromJSONFile(jsonFilePath);
 
-					string ext = Path.GetExtension(path);
-					string pageFileName = Path.GetFileName(path);
-					string relativeFilePath = Path.GetRelativePath(MainPath, path);
-					if (ext is ".html" or ".sbn-html")
+					foreach (string path in filesinMainFolder)
 					{
-						if (!pageFileName.StartsWith('_')) //It is not a partial
+						try
 						{
-							string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, langCode);
+							pageNumber++;
+							float progressPercent = (pageNumber / maxPageNumber) * 100;
+							progressReporter.ReportProgress(Convert.ToInt32(progressPercent), path);
 
-							string langFolder = langCode == "default" ? string.Empty : $"/{langCode}";
-							string rootDir = $"{outputDirectory}{langFolder}";
-							string destDir = $"{rootDir}/{Path.GetDirectoryName(relativeFilePath)}";
-							_ = Directory.CreateDirectory(destDir);
-							string fileDest = $"{destDir}/{Path.GetFileNameWithoutExtension(relativeFilePath)}.html";
-							//[Above] This assigns ".html" extension even when "sbn-html" is loaded
-							File.WriteAllText(fileDest, generatedPage);
+							string ext = Path.GetExtension(path);
+							string pageFileName = Path.GetFileName(path);
+							string relativeFilePath = Path.GetRelativePath(MainPath, path);
+							if ((ext is ".html" or ".sbn-html") && !pageFileName.StartsWith('_')) //It is not a partial
+							{
+								string langFolder = langCode == "default" ? string.Empty : $"/{langCode}";
+								string rootDir = $"{outputDirectory}{langFolder}";
+								string destDir = $"{rootDir}/{Path.GetDirectoryName(relativeFilePath)}";
+								string fileDest = $"{destDir}/{Path.GetFileNameWithoutExtension(relativeFilePath)}.html";
+								ProcessedPagePath = fileDest;
+								string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, langCode);
+								if (ErrorOccured)
+									throw websiteGenerationError;
+								//I had to do this complicated job, since this method cannot catch exceptions coming from
+								//static MakiScriptObject methods, even when the type is the same
+
+								_ = Directory.CreateDirectory(destDir);
+								//[Above] This assigns ".html" extension even when "sbn-html" is loaded
+								File.WriteAllText(fileDest, generatedPage);
+							}
+							else if (ext is not ".json" and not ".sbn")
+							{
+								//copy file to equivalent folder
+								string destDir = Path.GetDirectoryName(relativeFilePath);
+								Directory.CreateDirectory(destDir);
+								File.Copy($"{MainPath}/{relativeFilePath}", $"{outputDirectory}/{relativeFilePath}", true);
+							}
+						}
+						catch (FileNotFoundException ex)
+						{
+							Logger.Warning(path, ex.Message);
 						}
 					}
-					else if (ext is not ".json" and not ".sbn")
-					{
-						//copy file to equivalent folder
-						string destDir = Path.GetDirectoryName(relativeFilePath);
-						Directory.CreateDirectory(destDir);
-						File.Copy($"{MainPath}/{relativeFilePath}", $"{outputDirectory}/{relativeFilePath}", true);
-					}
 				}
+			}
+			finally
+			{
+				Logger.Dispose();
+				websiteGenerationError = null;
 			}
 		}
 	}

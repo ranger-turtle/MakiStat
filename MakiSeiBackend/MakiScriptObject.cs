@@ -1,5 +1,6 @@
 ﻿using Scriban;
 using Scriban.Runtime;
+using Scriban.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,9 +8,10 @@ using System.IO;
 
 namespace MakiSeiBackend
 {
+	//TODO Add function returning available language versions for processed page
 	internal class MakiScriptObject : ScriptObject
 	{
-		private static ScriptObject generateScriptObject()
+		private static ScriptObject GenerateScriptObject()
 		{
 			ScriptObject scriptObject = new();
 			scriptObject.Import(typeof(MakiScriptObject));
@@ -28,7 +30,21 @@ namespace MakiSeiBackend
 			Template template = Template.Parse(pageTemplate);
 			templateContext.PushGlobal(scriptObject);
 			Trace.WriteLine("Push");
-			string result = template.Render(templateContext);
+			string result;
+			try
+			{
+				result = template.Render(templateContext);
+			}
+			catch (FileNotFoundException ex)
+			{
+				ScribanGenerationEngine.SiteGenerator.Logger.Warning(pageTemplate, ex.Message);
+				result = string.Empty;
+			}
+			catch (ScriptRuntimeException ex)
+			{
+				ScribanGenerationEngine.SiteGenerator.ReportError(ex.Message);
+				result = string.Empty;
+			}
 			_ = templateContext.PopGlobal();
 			Trace.WriteLine("Pop");
 			return result;
@@ -56,7 +72,7 @@ namespace MakiSeiBackend
 
 			string pageTemplate = File.ReadAllText(templatePath);
 
-			ScriptObject scriptObject = generateScriptObject();
+			ScriptObject scriptObject = GenerateScriptObject();
 			scriptObject["section"] = sectionName;
 
 			return ParseAndRenderTemplate(pageTemplate, scriptObject);
@@ -72,20 +88,12 @@ namespace MakiSeiBackend
 			string langCode = ScribanGenerationEngine.LangCode;
 			Dictionary<string, object> model = JsonProcessor.ReadLangJSONModelFromJSONFile(modelPath, langCode);
 
-			ScriptObject scriptObject = generateScriptObject();
+			ScriptObject scriptObject = GenerateScriptObject();
 			scriptObject["model"] = model;
 
-			try
-			{
-				LoadPartialDataToScriptObject(templatePath, langCode, scriptObject);
-				LoadUniversalModelToScriptObject(modelPath, scriptObject);
-				return ParseAndRenderTemplate(pageTemplate, scriptObject);
-			}
-			catch (LanguageJsonNotFoundException ljnfe)
-			{
-				Trace.TraceWarning($"Error during processing file {templatePath}: {ljnfe}");
-				return $"Could not load partial {templatePath}";
-			}
+			LoadPartialDataToScriptObject(templatePath, langCode, scriptObject);
+			LoadUniversalModelToScriptObject(modelPath, scriptObject);
+			return ParseAndRenderTemplate(pageTemplate, scriptObject);
 		}
 
 		public static string LoadPartial(string templatePath, object model, object uniModel = null)
@@ -96,7 +104,7 @@ namespace MakiSeiBackend
 
 			string langCode = ScribanGenerationEngine.LangCode;
 
-			ScriptObject scriptObject = generateScriptObject();
+			ScriptObject scriptObject = GenerateScriptObject();
 			scriptObject["model"] = model;
 			scriptObject["uni_model"] = uniModel;
 
@@ -114,12 +122,20 @@ namespace MakiSeiBackend
 
 		public static object LoadModel(string modelPath, bool multilingual = true)
 		{
-			CheckExtension(ref modelPath, ".json");
+			try
+			{
+				CheckExtension(ref modelPath, ".json");
 
-			string langCode = ScribanGenerationEngine.LangCode;
-			Dictionary<string, object> model = multilingual ? JsonProcessor.ReadLangJSONModelFromJSONFile(modelPath, langCode) : JsonProcessor.ReadJSONModelFromJSONFile(modelPath);
+				string langCode = ScribanGenerationEngine.LangCode;
+				Dictionary<string, object> model = multilingual ? JsonProcessor.ReadLangJSONModelFromJSONFile(modelPath, langCode) : JsonProcessor.ReadJSONModelFromJSONFile(modelPath);
 
-			return model;
+				return model;
+			}
+			catch (FileNotFoundException ex)
+			{
+				ScribanGenerationEngine.SiteGenerator.Logger.Warning(ScribanGenerationEngine.SiteGenerator.ProcessedPagePath, ex.Message);
+				return null;
+			}
 		}
 	}
 }

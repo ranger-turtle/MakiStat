@@ -6,9 +6,11 @@ using System.IO;
 
 namespace MakiSeiBackend
 {
+	public class DuplicateObjectException : System.Exception { public DuplicateObjectException() : base("Tried to make duplicate object meant to be Singleton.") { } }
 	public class ScribanGenerationEngine : ITemplateEngine
 	{
-		public static TemplateContext TemplateContextInstance { get; private set; }
+		public static SiteGenerator SiteGenerator { get; private set; }
+		internal static TemplateContext TemplateContextInstance { get; private set; }
 
 		private string _mainPath;
 		private string _globalPath;
@@ -16,6 +18,11 @@ namespace MakiSeiBackend
 
 		public ScribanGenerationEngine(SiteGenerator siteGenerator)
 		{
+			if (SiteGenerator == null)
+				SiteGenerator = siteGenerator;
+			else
+				throw new DuplicateObjectException();
+
 			TemplateContextInstance = new TemplateContext() { TemplateLoader = new TemplateLoader() };
 			_mainPath = siteGenerator.MainPath;
 			_globalPath = siteGenerator.GlobalPath;
@@ -49,7 +56,7 @@ namespace MakiSeiBackend
 			Trace.WriteLine($"Processed page: {htmlPagePath}");
 			Trace.WriteLine("Push");
 			string result = template.Render(TemplateContextInstance);
-			TemplateContextInstance.PopGlobal();
+			_ = TemplateContextInstance.PopGlobal();
 			Trace.WriteLine("Pop");
 
 			TemplateContextInstance.Reset();

@@ -24,16 +24,17 @@ namespace MakiSei
 	{
 		public SiteGenerator SiteGenerator { get; private set; }
 
-		private BackgroundWorker backgroundWorker;
+		private readonly BackgroundWorker backgroundWorker;
 		private readonly string skeletonPath;
 		private string currentPath;
 
-		public ProgressWindow(string skeletonPath)
+		public ProgressWindow(SiteGenerator siteGenerator, string skeletonPath)
 		{
 			InitializeComponent();
+			SiteGenerator = siteGenerator;
 			WindowStyle = WindowStyle.None;
 			this.skeletonPath = skeletonPath;
-			backgroundWorker = new BackgroundWorker();
+			backgroundWorker = new();
 			backgroundWorker.WorkerReportsProgress = true;
 			backgroundWorker.DoWork += Worker_DoWork;
 			backgroundWorker.ProgressChanged += Worker_ProgressChanged;
@@ -43,8 +44,7 @@ namespace MakiSei
 		}
 		private void Worker_DoWork(object sender, DoWorkEventArgs e)
 		{
-			SiteGenerator = new(this);
-			SiteGenerator.GenerateSite(skeletonPath);
+			SiteGenerator.GenerateSite(skeletonPath, this);
 		}
 
 		public void ReportProgress(int progress, string pagePath)
@@ -69,7 +69,8 @@ namespace MakiSei
 			{
 				string message = $@"Error during rendering page: {SiteGenerator.ProcessedPagePath}
 
-{e.Error?.Message}";
+{e.Error?.Message}
+{e.Error?.InnerException?.Message}";
 				_ = MessageBox.Show(message, "Error", MessageBoxButton.OK, icon: MessageBoxImage.Error);
 				DialogResult = false;
 			}
