@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MakiSeiBackend
 {
@@ -12,6 +10,6 @@ namespace MakiSeiBackend
 		/// <param name="skeletonHtml">Skeleton HTML</param>
 		/// <param name="htmlPagePath">Path to HTML file representing page</param>
 		/// <returns>Generated page</returns>
-		string GeneratePage(string skeletonHtml, string htmlPagePath, Dictionary<string, object> globalData, string languageCode);
+		string GeneratePage(string skeletonHtml, string htmlPagePath, Dictionary<string, object> globalData, string languageCode, string[] languageCodes);
 	}
 }

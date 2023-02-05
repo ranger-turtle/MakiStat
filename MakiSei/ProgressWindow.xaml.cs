@@ -1,19 +1,6 @@
 ﻿using MakiSeiBackend;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MakiSei
 {
@@ -67,12 +54,16 @@ namespace MakiSei
 			}
 			else
 			{
-				string message = $@"Error during rendering page: {SiteGenerator.ProcessedPagePath}
+#if RELEASE
+				string message = $@"Error during rendering page: {SiteGenerator.TemplateStack}
 
 {e.Error?.Message}
 {e.Error?.InnerException?.Message}";
 				_ = MessageBox.Show(message, "Error", MessageBoxButton.OK, icon: MessageBoxImage.Error);
 				DialogResult = false;
+#else
+			throw e.Error;
+#endif
 			}
 		}
 	}

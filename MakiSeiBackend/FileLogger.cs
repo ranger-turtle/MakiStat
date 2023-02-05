@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MakiSeiBackend
 {
-	public class FileLogger : ILogger, IDisposable
+	public class FileLogger : ILogger
 	{
 		private FileStream fileStream;
 		private StreamWriter streamWriter;
@@ -20,33 +17,38 @@ namespace MakiSeiBackend
 			streamWriter = new StreamWriter(fileStream);
 		}
 
-		public string GenerateLogEntry(string messageType, string pageFilePath, string message)
+		public string GenerateLogEntry(string messageType, Stack<string> templatePathStack, string message)
 		{
 			DateTime dateTime = DateTime.Now;
 			Thread.CurrentThread.CurrentCulture = new CultureInfo("pl-PL");
 			string dateTimeStr = dateTime.ToString();
-			return $"[{dateTimeStr}] {messageType} during processing {pageFilePath}: {message}";
+			string lastPath = templatePathStack.Pop();
+			string pathStackForMessage = lastPath;
+			foreach (string path in templatePathStack)
+				pathStackForMessage = $"{path}->{pathStackForMessage}";
+			templatePathStack.Push(lastPath);
+			return $"[{dateTimeStr}] {messageType} during processing {pathStackForMessage}: {message}";
 		}
 
 
-		private void WriteToFile(string messageType, string pageFilePath, string message)
+		private void WriteToFile(string messageType, Stack<string> templatePathStack, string message)
 		{
-			streamWriter.WriteLine(GenerateLogEntry(messageType, pageFilePath, message));
+			streamWriter.WriteLine(GenerateLogEntry(messageType, templatePathStack, message));
 		}
 
-		public void Info(string pageFilePath, string message)
+		public void Info(Stack<string> templatePathStack, string message)
 		{
-			WriteToFile("Info", pageFilePath, message);
+			WriteToFile("Info", templatePathStack, message);
 		}
 
-		public void Warning(string pageFilePath, string message)
+		public void Warning(Stack<string> templatePathStack, string message)
 		{
-			WriteToFile("Warning", pageFilePath, message);
+			WriteToFile("Warning", templatePathStack, message);
 		}
 
-		public void Error(string pageFilePath, string message)
+		public void Error(Stack<string> templatePathStack, string message)
 		{
-			WriteToFile("Error", pageFilePath, message);
+			WriteToFile("Error", templatePathStack, message);
 		}
 
 		protected virtual void Dispose(bool disposing)

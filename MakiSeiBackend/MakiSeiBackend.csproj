@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Scriban.Signed" Version="5.5.2" />
+    <PackageReference Include="Scriban.Signed" Version="5.6.0" />
   </ItemGroup>
 
 </Project>

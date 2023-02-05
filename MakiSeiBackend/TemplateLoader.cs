@@ -3,11 +3,10 @@ using Scriban.Functions;
 using Scriban.Parsing;
 using Scriban.Runtime;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MakiSeiBackend
+namespace MakiSeiBackend.ScribanEngine
 {
 
 	/// <summary>

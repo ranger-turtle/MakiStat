@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
-namespace MakiSeiBackend
+namespace MakiSeiBackend.ScribanEngine
 {
-	//TODO Add function returning available language versions for processed page
 	internal class MakiScriptObject : ScriptObject
 	{
 		private static ScriptObject GenerateScriptObject()
@@ -24,12 +24,14 @@ namespace MakiSeiBackend
 				filePath += ext;
 		}
 
-		private static string ParseAndRenderTemplate(string pageTemplate, ScriptObject scriptObject)
+		private static string ParseAndRenderTemplate(string templatePath, string pageTemplate, ScriptObject scriptObject)
 		{
+			ScribanGenerationEngine instance = ScribanGenerationEngine.Instance;
 			TemplateContext templateContext = ScribanGenerationEngine.TemplateContextInstance;
 			Template template = Template.Parse(pageTemplate);
 			templateContext.PushGlobal(scriptObject);
 			Trace.WriteLine("Push");
+			instance.TemplatePathStack.Push(templatePath);
 			string result;
 			try
 			{
@@ -37,15 +39,16 @@ namespace MakiSeiBackend
 			}
 			catch (FileNotFoundException ex)
 			{
-				ScribanGenerationEngine.SiteGenerator.Logger.Warning(pageTemplate, ex.Message);
+				instance.Logger.Warning(instance.TemplatePathStack, ex.Message);
 				result = string.Empty;
 			}
 			catch (ScriptRuntimeException ex)
 			{
-				ScribanGenerationEngine.SiteGenerator.ReportError(ex.Message);
+				instance.ReportError(ex.Message);
 				result = string.Empty;
 			}
 			_ = templateContext.PopGlobal();
+			instance.TemplatePathStack.Pop();
 			Trace.WriteLine("Pop");
 			return result;
 		}
@@ -75,7 +78,7 @@ namespace MakiSeiBackend
 			ScriptObject scriptObject = GenerateScriptObject();
 			scriptObject["section"] = sectionName;
 
-			return ParseAndRenderTemplate(pageTemplate, scriptObject);
+			return ParseAndRenderTemplate(templatePath, pageTemplate, scriptObject);
 		}
 
 		public static string LoadPartialFile(string templatePath, string modelPath)
@@ -85,7 +88,7 @@ namespace MakiSeiBackend
 
 			string pageTemplate = File.ReadAllText(templatePath);
 
-			string langCode = ScribanGenerationEngine.LangCode;
+			string langCode = ScribanGenerationEngine.Instance.LangCode;
 			Dictionary<string, object> model = JsonProcessor.ReadLangJSONModelFromJSONFile(modelPath, langCode);
 
 			ScriptObject scriptObject = GenerateScriptObject();
@@ -93,7 +96,7 @@ namespace MakiSeiBackend
 
 			LoadPartialDataToScriptObject(templatePath, langCode, scriptObject);
 			LoadUniversalModelToScriptObject(modelPath, scriptObject);
-			return ParseAndRenderTemplate(pageTemplate, scriptObject);
+			return ParseAndRenderTemplate(templatePath, pageTemplate, scriptObject);
 		}
 
 		public static string LoadPartial(string templatePath, object model, object uniModel = null)
@@ -102,7 +105,7 @@ namespace MakiSeiBackend
 
 			string pageTemplate = File.ReadAllText(templatePath);
 
-			string langCode = ScribanGenerationEngine.LangCode;
+			string langCode = ScribanGenerationEngine.Instance.LangCode;
 
 			ScriptObject scriptObject = GenerateScriptObject();
 			scriptObject["model"] = model;
@@ -111,7 +114,7 @@ namespace MakiSeiBackend
 			try
 			{
 				LoadPartialDataToScriptObject(templatePath, langCode, scriptObject);
-				return ParseAndRenderTemplate(pageTemplate, scriptObject);
+				return ParseAndRenderTemplate(templatePath, pageTemplate, scriptObject);
 			}
 			catch (LanguageJsonNotFoundException ljnfe)
 			{
@@ -122,20 +125,31 @@ namespace MakiSeiBackend
 
 		public static object LoadModel(string modelPath, bool multilingual = true)
 		{
+			ScribanGenerationEngine instance = ScribanGenerationEngine.Instance;
 			try
 			{
 				CheckExtension(ref modelPath, ".json");
 
-				string langCode = ScribanGenerationEngine.LangCode;
+				string langCode = ScribanGenerationEngine.Instance.LangCode;
 				Dictionary<string, object> model = multilingual ? JsonProcessor.ReadLangJSONModelFromJSONFile(modelPath, langCode) : JsonProcessor.ReadJSONModelFromJSONFile(modelPath);
 
 				return model;
 			}
 			catch (FileNotFoundException ex)
 			{
-				ScribanGenerationEngine.SiteGenerator.Logger.Warning(ScribanGenerationEngine.SiteGenerator.ProcessedPagePath, ex.Message);
+				instance.Logger.Warning(instance.TemplatePathStack, ex.Message);
 				return null;
 			}
+		}
+
+		public static string[] LoadLangCodes() => ScribanGenerationEngine.Instance.LangCodes;
+
+		public static string LoadLangPageUrl(string langCode)
+		{
+			ScribanGenerationEngine engine = ScribanGenerationEngine.Instance;
+			string pagePath = engine.TemplatePathStack.ToArray()[^2];
+			pagePath = pagePath.Substring(pagePath.IndexOf('\\'));
+			return $"{SiteGenerator.GenerateLanguageDirPath(langCode)}{pagePath}";
 		}
 	}
 }
