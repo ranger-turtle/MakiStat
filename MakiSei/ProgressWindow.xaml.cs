@@ -1,5 +1,6 @@
 ﻿using MakiSeiBackend;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 
 namespace MakiSei
@@ -55,7 +56,7 @@ namespace MakiSei
 			else
 			{
 #if RELEASE
-				string message = $@"Error during rendering page: {SiteGenerator.TemplateStack}
+				string message = $@"Error during rendering page: {SiteGenerator.TemplateStack.Last()}
 
 {e.Error?.Message}
 {e.Error?.InnerException?.Message}";

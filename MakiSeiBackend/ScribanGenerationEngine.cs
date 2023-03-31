@@ -6,7 +6,15 @@ using System.IO;
 
 namespace MakiSeiBackend.ScribanEngine
 {
+	/// <summary>
+	/// Exception meant to be raised when duplicate Singleton object was going to occur.
+	/// </summary>
 	public class DuplicateObjectException : System.Exception { public DuplicateObjectException() : base("Tried to make duplicate object meant to be Singleton.") { } }
+
+	/// <summary>
+	/// Generation engine working on Scriban-based templates.
+	/// Scriban repository: https://github.com/scriban/scriban
+	/// </summary>
 	internal class ScribanGenerationEngine : ITemplateEngine
 	{
 		internal static ScribanGenerationEngine Instance { get; private set; }
@@ -39,6 +47,16 @@ namespace MakiSeiBackend.ScribanEngine
 			TemplatePathStack = siteGenerator.TemplateStack;
 		}
 
+		//FIXME repair path stack-related error leaving some positions after book page processing
+		/// <summary>
+		/// It generates single page for the website.
+		/// </summary>
+		/// <param name="skeletonHtml">Skeleton HTNL code</param>
+		/// <param name="htmlPagePath">Path to the template HTML representing output page</param>
+		/// <param name="globalData">Data globally used across all templates</param>
+		/// <param name="languageCode">Code of the processed language</param>
+		/// <param name="langCodes">All of the codes meant to be processed</param>
+		/// <returns></returns>
 		public string GeneratePage(string skeletonHtml, string htmlPagePath, Dictionary<string, object> globalData, string languageCode, string[] langCodes)
 		{
 			LangCodes = langCodes;

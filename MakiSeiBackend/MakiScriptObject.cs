@@ -9,7 +9,11 @@ using System.Linq;
 
 namespace MakiSeiBackend.ScribanEngine
 {
-	internal class MakiScriptObject : ScriptObject
+	/// <summary>
+	/// Functions which can be called in Scriban-based templates for MakiSei.
+	/// They use ScriptObjects which store data the templates refer to.
+	/// </summary>
+	internal class MakiScriptObject
 	{
 		private static ScriptObject GenerateScriptObject()
 		{

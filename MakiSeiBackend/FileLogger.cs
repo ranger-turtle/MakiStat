@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace MakiSeiBackend
 {
+	/// <summary>
+	/// Logger saving informations to file. It is needed until I will not decide to upgrade to .NET Core 3.1, where built-in logging is included.
+	/// </summary>
 	public class FileLogger : ILogger
 	{
 		private FileStream fileStream;

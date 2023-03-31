@@ -11,6 +11,11 @@ namespace MakiSeiBackend
 	public class JsonProcessor
 	{
 #nullable enable
+		/// <summary>
+		/// Reads data from JSON file.
+		/// </summary>
+		/// <param name="jsonPath">Path to the JSON file.</param>
+		/// <returns>Dictionary containing data read from JSON file.</returns>
 		public static Dictionary<string, object>? ReadJSONModelFromJSONFile(string jsonPath)
 		{
 			if (!File.Exists(jsonPath))
@@ -20,6 +25,12 @@ namespace MakiSeiBackend
 			jsonSerializeOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
 			return JsonSerializer.Deserialize<Dictionary<string, object>>(json, jsonSerializeOptions);
 		}
+		/// <summary>
+		/// Reads data from JSON file with language-specific data.
+		/// </summary>
+		/// <param name="jsonPath">Path to the JSON file whose name does not contain part of extension indicating the language version.</param>
+		/// <param name="langCode">Language code which should be contained in actual input JSON file as a part of compound extension.</param>
+		/// <returns></returns>
 		public static Dictionary<string, object>? ReadLangJSONModelFromJSONFile(string jsonPath, string langCode)
 		{
 			string jsonNoExtFileName = Path.GetFileNameWithoutExtension(jsonPath);

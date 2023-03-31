@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MakiSeiBackend
 {
@@ -18,6 +19,26 @@ namespace MakiSeiBackend
 	//TODO Support JSON syntax errors
 	//TODO Add modification checking to avoid re-rendering unchanged pages
 	//BONUS add choosing to render part of the website
+	/// <summary>
+	/// Main component of the MakiSei Static Site Generator. It mediates between the UI and the template engine.
+	///
+	/// This is the framework which by default, requires making skeleton.html, which contain the HTML elements used in all pages,
+	/// multiple skeleton.[language code].json files, where language code means the language of data this file contains and two folders:
+	/// _global, _main and output. _global folder is meant to store data and partials meant to be used across multiple static pages.
+	/// _main folder is meant to store HTML templates representing output pages and its folder structure is perfectly mapped to the output
+	/// (e.g. if the HTML page is in _main/categories/animals.html, it will be in output/categories/animals.html).
+	/// Names of HTML templates representing output pages must not begin from underscore, since such files are recognised as partials.
+	/// Page HTML templates will have the same name as output page and will be stored in analogous folder relative to _main. Each of them must
+	/// have the JSON file of the same name and at least one page with compound extension .[lang code].json. They need to be in the same folder as
+	/// corresponding HTML file. However, not all pages need to have exactly the same set of languages it would be available. When the
+	/// language JSON is omitted, the webpage in defined language will not be generated.
+	/// 
+	/// One of the language codes must have value "default" and is recommended to be used as the main language of the website. HTML pages
+	/// of default lang code will be rendered in root output folder instead of one of subfolders which have the same name as the remaining
+	/// lang codes. Lang codes can be defined by user, although codes used for locales are recommended.
+	/// 
+	/// Type of the templates this class can handle is dependent on implementation of templateEngine field.
+	/// </summary>
 	public class SiteGenerator
 	{
 		public ILogger Logger { get; private set; }
@@ -35,6 +56,12 @@ namespace MakiSeiBackend
 			templateEngine = new ScribanEngine.ScribanGenerationEngine(this);
 		}
 
+		/// <summary>
+		/// Extracts language code from JSON file name.
+		/// </summary>
+		/// <param name="jsonFilePath">Path to the JSON file name which contains language code for extraction.</param>
+		/// <returns>Extracted language code.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private string ExtractLangCode(string jsonFilePath)
 		{
 			string filename = Path.GetFileName(jsonFilePath);
@@ -42,8 +69,15 @@ namespace MakiSeiBackend
 			//if there are two fragments, return lang code
 			return fragments[^2];
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string GenerateLanguageDirPath(string languageCode) => languageCode != "default" ? "/" + languageCode : null;
 
+		/// <summary>
+		/// Generates the static multilingual website.
+		/// </summary>
+		/// <param name="skeletonPath">Path to the skeleton HTML template.</param>
+		/// <param name="progressReporter">It passes the progress data to the UI.</param>
+		/// <exception cref="FileNotFoundException">It is thrown when the skeleton HTML file does not exists.</exception>
 		public void GenerateSite(string skeletonPath, IWebsiteGenerationProgressReporter progressReporter)
 		{
 			if (skeletonPath == null || skeletonPath == string.Empty)
@@ -51,6 +85,7 @@ namespace MakiSeiBackend
 
 			Environment.CurrentDirectory = Path.GetDirectoryName(skeletonPath);
 			Logger.Open();
+			TemplateStack.Clear();
 			string[] filesinMainFolder = Directory.GetFiles(MainPath, "*.*", new EnumerationOptions() { RecurseSubdirectories = true });
 			string outputDirectory = "output";
 			Directory.CreateDirectory(outputDirectory);
@@ -96,6 +131,7 @@ namespace MakiSeiBackend
 									string fileDest = $"{destDir}/{Path.GetFileNameWithoutExtension(relativeFilePath)}.html";
 									TemplateStack.Push(fileDest);
 									string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, currentLangCode, availableLangCodes);
+									TemplateStack.Pop();
 									//I had to do this complicated job, since this method cannot catch exceptions coming from
 									//static MakiScriptObject methods, even when the type is the same
 
@@ -106,9 +142,6 @@ namespace MakiSeiBackend
 								catch (FileNotFoundException ex)
 								{
 									Logger.Warning(TemplateStack, ex.Message);
-								}
-								finally
-								{
 									TemplateStack.Pop();
 								}
 							}
