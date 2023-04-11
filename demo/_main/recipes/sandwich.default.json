@@ -1,0 +1,16 @@
+{
+	"title": "Sandwich with cheese and tomatoes",
+	"header": "Sandwich with cheese and tomatoes",
+	"ingredients":
+	[
+		"Bread",
+		"Cheese",
+		"Tomatoes"
+	],
+	"steps":
+	[
+		"Slice bread, cheese and tomatoes.",
+		"Put the slices of cheese and tomato on bread and put the slice of bread on them.",
+		"Repeat two previous steps for remaining sandwiches."
+	]
+}

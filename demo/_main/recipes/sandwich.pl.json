@@ -1,0 +1,16 @@
+{
+	"title": "Kanapka z serem i pomidorami",
+	"header": "Kanapka z serem i pomidorami",
+	"ingredients":
+	[
+		"Chleb",
+		"Ser",
+		"Pomidory"
+	],
+	"steps":
+	[
+		"Pokrój chleb, ser i pomidory na plastry.",
+		"Połóż plasterki sera i pomidora na kromce chleba i połóż drugą kromkę na to wszystko.",
+		"Powtórz dwa poprzednie kroki dla pozostałych kanapek."
+	]
+}

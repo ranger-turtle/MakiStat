@@ -1,0 +1,15 @@
+{
+	"title": "Fizzy drink",
+	"header": "Fizzy drink from powder",
+	"ingredients":
+	[
+		"Water",
+		"Fizzy drink powder"
+	],
+	"steps":
+	[
+		"Fill the glass with water.",
+		"Warm the water in microwave oven for 30 seconds.",
+		"Put the powdered drink to the water and mix well."
+	]
+}

@@ -22,6 +22,12 @@ namespace MakiSeiBackend.ScribanEngine
 			return scriptObject;
 		}
 
+		/// <summary>
+		/// Checks if the given path has given extension and adds it when the path
+		/// is not terminated with it.
+		/// </summary>
+		/// <param name="filePath">Path of the file.</param>
+		/// <param name="ext">Extension to check</param>
 		private static void CheckExtension(ref string filePath, string ext)
 		{
 			if (!filePath.EndsWith(ext, StringComparison.InvariantCulture))
@@ -62,6 +68,13 @@ namespace MakiSeiBackend.ScribanEngine
 			Dictionary<string, object> partialData = JsonProcessor.ReadLangJSONModelFromJSONFile(partialDataPath, langCode);
 			scriptObject["partial"] = partialData;
 		}
+
+		/// <summary>
+		/// Reads universal (language-independent) data from JSON file and loads them to Script Object
+		/// to be used by the template.
+		/// </summary>
+		/// <param name="modelPath">Path to the JSON file contatining universal data.</param>
+		/// <param name="scriptObject">Script object this method saves universal data to.</param>
 		public static void LoadUniversalModelToScriptObject(string modelPath, ScriptObject scriptObject)
 		{
 			modelPath = Path.GetDirectoryName(modelPath) + '/' + Path.GetFileNameWithoutExtension(modelPath) + ".json";
@@ -152,7 +165,7 @@ namespace MakiSeiBackend.ScribanEngine
 		{
 			ScribanGenerationEngine engine = ScribanGenerationEngine.Instance;
 			string pagePath = engine.TemplatePathStack.ToArray()[^2];
-			pagePath = pagePath.Substring(pagePath.IndexOf('\\'));
+			pagePath = pagePath[pagePath.IndexOf('\\')..];
 			return $"{SiteGenerator.GenerateLanguageDirPath(langCode)}{pagePath}";
 		}
 	}

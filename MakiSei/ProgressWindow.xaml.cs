@@ -49,13 +49,13 @@ namespace MakiSei
 
 		private void Worker_Exit(object sender, RunWorkerCompletedEventArgs e)
 		{
+#if RELEASE
 			if (e.Error == null)
 			{
 				DialogResult = true;
 			}
 			else
 			{
-#if RELEASE
 				string message = $@"Error during rendering page: {SiteGenerator.TemplateStack.Last()}
 
 {e.Error?.Message}

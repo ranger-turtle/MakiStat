@@ -69,6 +69,7 @@ namespace MakiSeiBackend
 			//if there are two fragments, return lang code
 			return fragments[^2];
 		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static string GenerateLanguageDirPath(string languageCode) => languageCode != "default" ? "/" + languageCode : null;
 
@@ -132,11 +133,8 @@ namespace MakiSeiBackend
 									TemplateStack.Push(fileDest);
 									string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, currentLangCode, availableLangCodes);
 									TemplateStack.Pop();
-									//I had to do this complicated job, since this method cannot catch exceptions coming from
-									//static MakiScriptObject methods, even when the type is the same
 
 									_ = Directory.CreateDirectory(destDir);
-									//[Above] This assigns ".html" extension even when "sbn-html" is loaded
 									File.WriteAllText(fileDest, generatedPage);
 								}
 								catch (FileNotFoundException ex)
