@@ -47,6 +47,8 @@ you do not need to know any other frameworks. MakiSei does not give any ready la
 have to modify for your needs what would be difficult when your layout needs to be very different
 from the provided.
 
+Generated website can be manually published to the traditional hosting services.
+
 ## Framework
 
 The data and the templates need to be organized in the two folders: _global and _main.
@@ -312,15 +314,28 @@ end }}">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{{ page.title }} - Great Cooking</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="/style.css">
 	{{- load_page page_file 'stylesheets' ~}}
 </head>
 <body>
-	<header>Great Cooking</header>
-	<main>
-	{{- load_page page_file 'main' ~}}
-	</main>
-	<footer>{{ global.copyright }}</footer>
+	<div id="main">
+			<header>Great Cooking</header>
+			<main>
+			{{- load_page page_file 'main' ~}}
+			</main>
+			<footer>
+				<p style="margin-bottom: 0.4em;">{{ global.copyright }}</p>
+				<div class="lang-menu">
+					<ul>
+						<li><a href="{{ load_lang_page_url 'pl' }}" >PL</a></li>
+						<li><a href="{{ load_lang_page_url 'default' }}" >EN</a></li>
+					</ul>
+				</div>
+			</footer>
+		</div>
 </body>
 </html>
 ```
@@ -362,6 +377,9 @@ is the name of the section defined in the page template.
 ```global.copyright``` is replaced by the data saved in ```copyright``` property in the
 ```global``` global object which store information different across the language versions but
 always the same in all pages of the specific language version.
+
+```load_lang_page_url 'pl'``` call renders the URL leading to the same page in Polish language
+whose code is 'pl'. Similar call in line below renders the same URL in English language.
 
 ### Language version variable global data files
 
@@ -442,18 +460,23 @@ Many pages may contain components having the same HTML tag structure and they ca
 partial templates. Create ```recipes``` folder in ```_main``` folder and create three page templates:
 ```fizzy.html```, ```sandwich.html``` and ```orange_rice.html```. Fill each of them with HTML code:
 
-```ruby
+```html
+{{~ if section == 'stylesheets'}}
+	<link rel="stylesheet" href="/recipes/recipes.css">
+{{~ end -}}
 {{~ if section == 'main'
 load_partial (global_path + '/_recipe') page uni_page
 end ~}}
 ```
 
 Why has every file exactly the same content? It is because the page uses ```_recipe``` HTML partial
-template which needs to be placed in ```global``` folder whose path is stored in ```global_path```
+template which needs to be placed in ```_global``` folder whose path is stored in ```global_path```
 global variable. Partial is processed and loaded by ```load_partial``` function which passes three
 parameters: path to the partial template, ```page``` global object and ```uni_page``` global object
 which unlike ```page``` object, it stores information used in all language versions but still exclusive to
 currently processed page. Data stored in these objects will be put to the partial.
+
+These pages use additional stylesheet and that's why ```stylesheets``` section is included here.
 
 ### Partial templates
 
@@ -463,7 +486,7 @@ in the partial file name to avoid confusion with page templates. Fill this file 
 
 ```html
 <h1>{{ model.header }}</h1>
-<img src="img/{{ uni_model.image }}.jpg" alt="illustration" loading="lazy">
+<img src="/img/{{ uni_model.image }}.jpg" alt="{{ partial.illustration }}" loading="lazy">
 <section>
 	<h2>{{ partial.ingredientsHeader }}</h2>
 	<ul class="ingredients">
@@ -593,6 +616,7 @@ Create file ```_recipe.default.json``` in the same folder as ```_partial``` and 
 
 ```json
 {
+	"illustration": "ilustracja",
 	"ingredientsHeader": "Ingredients",
 	"stepsHeader": "Steps"
 }
@@ -605,14 +629,14 @@ Create file ```recipes.html``` in ```_main``` folder and fill it with this code:
 ```html
 {{~ if section == 'main'}}
 <h1>{{ page.title }}</h1>
-<p>{{ page.description }}</p>
-<ul>
+<p>{{ page.description }}:</p>
+<ul class="recipe-list">
 	{{ for $link in uni_page.links
 	$recipeData = load_model main_path + '/recipes/' + $link }}
 	<li><a href="recipes/{{ $link }}.html">{{ $recipeData.title }}</a></li>
 	{{ end }}
 </ul>
-{{ end }}
+{{~ end }}
 ```
 
 And create such data files:
@@ -655,6 +679,11 @@ automated consistency and validation.
 All data files with Polish language content are stored in ```*.pl.json``` files.
 They differ from ```*.default.json``` files only with language of the values and they are stored in the
 same folder. You can copy them from demo which you can download from repository.
+
+### CSS stylesheets and scripts
+
+MakiSei is designed to handle HTML code only and therefore, you need to put stylesheets and scripts
+manually to the output. Fortunately, you can copy stylesheets from demo.
 
 ### Generating the website
 

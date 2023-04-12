@@ -1,0 +1,17 @@
+h2 {
+  font-size: 1.6em;
+}
+
+ul, ol {
+  margin-bottom: 0.4em;
+  margin-left: 2em;
+  margin-right: 2em;
+}
+ul li, ol li {
+  text-align: left;
+}
+
+img {
+  width: 300px;
+  height: auto;
+}/*# sourceMappingURL=recipes.css.map */

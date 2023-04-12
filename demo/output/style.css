@@ -1,0 +1,97 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "DynaPuff", cursive;
+  font-size: 21px;
+  scroll-behavior: smooth;
+  color: green;
+  text-align: center;
+}
+
+body {
+  background-color: aquamarine;
+}
+
+#main {
+  margin: 0 auto;
+  max-width: 1000px;
+  border-left: 3px double #333;
+  border-right: 3px double #333;
+  background-color: aliceblue;
+}
+
+header {
+  text-transform: uppercase;
+  letter-spacing: 20px;
+  font-size: 3rem;
+  padding: 0.5em;
+  background-color: #2499ff;
+  border-bottom: 2px dotted black;
+  color: snow;
+}
+
+h1 {
+  font-size: 2em;
+  padding: 0.5em;
+}
+
+main {
+  padding: 0 3em;
+}
+
+p {
+  text-align: justify;
+  padding: 0.5em 0;
+}
+
+a {
+  text-decoration: none;
+  color: royalblue;
+}
+a:hover {
+  color: #6d7fb5;
+}
+
+footer {
+  padding: 0.7em;
+  background-color: #57b1ff;
+  border-top: 1px dotted black;
+  margin-top: 1.2em;
+}
+footer p {
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+.lang-menu ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.lang-menu ul li {
+  list-style: none;
+  margin-left: 0.5em;
+}
+.lang-menu ul li a {
+  font-size: 1.2rem;
+}
+
+ul.recipe-list > li {
+  list-style: none;
+  margin: 0.2em 0;
+  border: 3px solid blue;
+  border-radius: 5px;
+}
+ul.recipe-list > li a {
+  display: block;
+  width: auto;
+  height: -moz-max-content;
+  height: max-content;
+  padding: 1em;
+  font-size: 1.2em;
+  background-color: antiquewhite;
+}
+ul.recipe-list > li a:hover {
+  background-color: #fdf6ee;
+}/*# sourceMappingURL=style.css.map */

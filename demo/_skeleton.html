@@ -9,12 +9,27 @@ end }}">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{{ page.title }} - Great Cooking</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="/style.css">
 	{{- load_page page_file 'stylesheets' ~}}
 </head>
 <body>
-	<header>Great Cooking</header>
-	{{- load_page page_file 'main' ~}}
-	<footer>{{ global.copyright }}</footer>
+	<div id="main">
+			<header>Great Cooking</header>
+			<main>
+			{{- load_page page_file 'main' ~}}
+			</main>
+			<footer>
+				<p style="margin-bottom: 0.4em;">{{ global.copyright }}</p>
+				<div class="lang-menu">
+					<ul>
+						<li><a href="{{ load_lang_page_url 'pl' }}" >PL</a></li>
+						<li><a href="{{ load_lang_page_url 'default' }}" >EN</a></li>
+					</ul>
+				</div>
+			</footer>
+		</div>
 </body>
 </html>

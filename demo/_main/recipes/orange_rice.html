@@ -1,3 +1,6 @@
+{{~ if section == 'stylesheets'}}
+	<link rel="stylesheet" href="/recipes/recipes.css">
+{{~ end -}}
 {{~ if section == 'main'
 load_partial (global_path + '/_recipe') page uni_page
 end ~}}
