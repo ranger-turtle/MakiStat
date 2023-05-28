@@ -128,8 +128,8 @@ namespace MakiSeiBackend
 
 									string langFolder = currentLangCode == "default" ? string.Empty : $"/{currentLangCode}";
 									string rootDir = $"{outputDirectory}{langFolder}";
-									string destDir = $"{rootDir}/{Path.GetDirectoryName(relativeFilePath)}";
-									string fileDest = $"{destDir}/{Path.GetFileNameWithoutExtension(relativeFilePath)}.html";
+									string destDir = Path.Combine(rootDir, Path.GetDirectoryName(relativeFilePath));
+									string fileDest = Path.Combine(destDir, $"{Path.GetFileNameWithoutExtension(relativeFilePath)}.html");
 									TemplateStack.Push(fileDest);
 									string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, currentLangCode, availableLangCodes);
 									TemplateStack.Pop();

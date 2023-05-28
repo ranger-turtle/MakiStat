@@ -59,6 +59,8 @@ namespace MakiSeiBackend.ScribanEngine
 		/// <returns></returns>
 		public string GeneratePage(string skeletonHtml, string htmlPagePath, Dictionary<string, object> globalData, string languageCode, string[] langCodes)
 		{
+			websiteGenerationError = null;
+
 			LangCodes = langCodes;
 			LangCode = languageCode;
 
@@ -85,9 +87,7 @@ namespace MakiSeiBackend.ScribanEngine
 			TemplateContextInstance.PushGlobal(globalScriptObject);
 			Trace.WriteLine($"Processed page: {htmlPagePath}");
 			Trace.WriteLine("Push");
-			TemplatePathStack.Push(htmlPagePath);
 			string result = template.Render(TemplateContextInstance);
-			TemplatePathStack.Pop();
 			_ = TemplateContextInstance.PopGlobal();
 			Trace.WriteLine("Pop");
 			if (ErrorOccured)

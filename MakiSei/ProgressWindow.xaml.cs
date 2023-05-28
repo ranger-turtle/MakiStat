@@ -49,7 +49,6 @@ namespace MakiSei
 
 		private void Worker_Exit(object sender, RunWorkerCompletedEventArgs e)
 		{
-#if RELEASE
 			if (e.Error == null)
 			{
 				DialogResult = true;
@@ -62,9 +61,6 @@ namespace MakiSei
 {e.Error?.InnerException?.Message}";
 				_ = MessageBox.Show(message, "Error", MessageBoxButton.OK, icon: MessageBoxImage.Error);
 				DialogResult = false;
-#else
-			throw e.Error;
-#endif
 			}
 		}
 	}
