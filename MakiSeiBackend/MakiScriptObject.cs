@@ -164,8 +164,8 @@ namespace MakiSeiBackend.ScribanEngine
 		public static string LoadLangPageUrl(string langCode)
 		{
 			ScribanGenerationEngine engine = ScribanGenerationEngine.Instance;
-			string pagePath = engine.TemplatePathStack.ToArray()[0];
-			pagePath = pagePath[pagePath.Replace('\\','/').LastIndexOf('/')..];
+			string pagePath = engine.CurrentPageFile;
+			pagePath = pagePath[pagePath.Replace('\\','/'). IndexOf('/')..];
 			return $"{SiteGenerator.GenerateLanguageDirPath(langCode)}{pagePath}";
 		}
 	}

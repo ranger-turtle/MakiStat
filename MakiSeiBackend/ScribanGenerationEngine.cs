@@ -24,6 +24,7 @@ namespace MakiSeiBackend.ScribanEngine
 		private readonly string _globalPath;
 		internal ILogger Logger { get; }
 		internal string LangCode { get; private set; }
+		internal string CurrentPageFile { get; private set; }
 		internal Stack<string> TemplatePathStack { get; }
 		internal string[] LangCodes { get; private set; }
 
@@ -63,6 +64,7 @@ namespace MakiSeiBackend.ScribanEngine
 
 			LangCodes = langCodes;
 			LangCode = languageCode;
+			CurrentPageFile = htmlPagePath;
 
 			string htmlPageDirectory = Path.GetDirectoryName(htmlPagePath);
 			string htmlPageNameWithoutExt = Path.GetFileNameWithoutExtension(htmlPagePath);

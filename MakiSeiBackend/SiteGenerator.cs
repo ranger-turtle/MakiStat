@@ -46,7 +46,6 @@ namespace MakiSeiBackend
 		public string GlobalPath { get; private set; } = "_global";
 		public Stack<string> TemplateStack { get; private set; } = new Stack<string>();
 
-		//BONUS try using Dependency Injection
 		private readonly ITemplateEngine templateEngine;
 
 		public SiteGenerator() : this(new FileLogger()) { }
