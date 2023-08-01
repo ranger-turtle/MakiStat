@@ -24,9 +24,11 @@ namespace MakiSeiBackend.ScribanEngine
 		private readonly string _globalPath;
 		internal ILogger Logger { get; }
 		internal string LangCode { get; private set; }
-		internal string CurrentPageFile { get; private set; }
-		internal Stack<string> TemplatePathStack { get; }
+		internal string CurrentPageTemplateFilePath { get; private set; }
+		internal string RelativeCurrentOutputPageFilePath { get; private set; }
+		internal Stack<string> TemplatePathStack { get; init; }
 		internal string[] LangCodes { get; private set; }
+		internal ModificationChecker ModificationChecker { get; private set; }
 
 		private WebsiteGenerationErrorException websiteGenerationError;
 
@@ -44,6 +46,7 @@ namespace MakiSeiBackend.ScribanEngine
 			TemplateContextInstance = new TemplateContext() { TemplateLoader = new TemplateLoader() };
 			_mainPath = siteGenerator.MainPath;
 			_globalPath = siteGenerator.GlobalPath;
+			ModificationChecker = siteGenerator.ModificationChecker;
 			Logger = siteGenerator.Logger;
 			TemplatePathStack = siteGenerator.TemplateStack;
 		}
@@ -58,23 +61,29 @@ namespace MakiSeiBackend.ScribanEngine
 		/// <param name="languageCode">Code of the processed language</param>
 		/// <param name="langCodes">All of the codes meant to be processed</param>
 		/// <returns></returns>
-		public string GeneratePage(string skeletonHtml, string htmlPagePath, Dictionary<string, object> globalData, string languageCode, string[] langCodes)
+		public string GeneratePage(string htmlPagePath, string skeletonHtml, Dictionary<string, object> globalData, string languageCode, string[] langCodes)
 		{
 			websiteGenerationError = null;
 
 			LangCodes = langCodes;
 			LangCode = languageCode;
-			CurrentPageFile = htmlPagePath;
+			CurrentPageTemplateFilePath = htmlPagePath;
 
 			string htmlPageDirectory = Path.GetDirectoryName(htmlPagePath);
 			string htmlPageNameWithoutExt = Path.GetFileNameWithoutExtension(htmlPagePath);
 			string potentialUniversalModelPath = $"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json";
+			RelativeCurrentOutputPageFilePath = Path.Combine(SiteGenerator.GenerateLanguageDirPath(languageCode) ?? string.Empty, Path.GetRelativePath(_mainPath, htmlPagePath));
+			if (RelativeCurrentOutputPageFilePath.StartsWith('/'))
+				RelativeCurrentOutputPageFilePath = RelativeCurrentOutputPageFilePath[1..];
+			// Range used for removing leading slash
+			string languageModelPathWithoutExt = Path.Combine(htmlPageDirectory, htmlPageNameWithoutExt);
+			string languageModelPath = Path.Combine(htmlPageDirectory, $"{htmlPageNameWithoutExt}.{languageCode}.json");
 
 			ScriptObject globalScriptObject = new()
 			{
 				{ "global", globalData },
 				{ "uni_page", File.Exists(potentialUniversalModelPath) ? JsonProcessor.ReadJSONModelFromJSONFile(potentialUniversalModelPath) : null },
-				{ "page", JsonProcessor.ReadLangJSONModelFromJSONFile($"{htmlPageDirectory}/{htmlPageNameWithoutExt}.json", languageCode) },
+				{ "page", JsonProcessor.ReadLangJSONModelFromJSONFile(languageModelPathWithoutExt, languageCode) },
 				{ "current_page", htmlPageNameWithoutExt },
 				{ "page_file", htmlPagePath },
 				{ "lang_code", languageCode },
@@ -92,6 +101,15 @@ namespace MakiSeiBackend.ScribanEngine
 			string result = template.Render(TemplateContextInstance);
 			_ = TemplateContextInstance.PopGlobal();
 			Trace.WriteLine("Pop");
+			
+			if (File.Exists(potentialUniversalModelPath))
+			{
+				string universalModelContent = File.ReadAllText(potentialUniversalModelPath);
+				ModificationChecker.AddResourceToModificationChecking(RelativeCurrentOutputPageFilePath, potentialUniversalModelPath, universalModelContent);
+			}
+			string languagePageModelContent = File.ReadAllText(languageModelPath);
+			ModificationChecker.AddResourceToModificationChecking(RelativeCurrentOutputPageFilePath, languageModelPath, languagePageModelContent);
+
 			if (ErrorOccured)
 				throw websiteGenerationError;
 

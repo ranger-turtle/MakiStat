@@ -2,14 +2,14 @@
 
 namespace MakiSeiBackend
 {
-	internal interface ITemplateEngine
+	public interface ITemplateEngine
 	{
 		/// <summary>
 		/// Generates 
 		/// </summary>
-		/// <param name="skeletonHtml">Skeleton HTML</param>
 		/// <param name="htmlPagePath">Path to HTML file representing page</param>
+		/// <param name="skeletonHtml">Skeleton HTML</param>
 		/// <returns>Generated page</returns>
-		string GeneratePage(string skeletonHtml, string htmlPagePath, Dictionary<string, object> globalData, string languageCode, string[] languageCodes);
+		string GeneratePage(string htmlPagePath, string skeletonHtml, Dictionary<string, object> globalData, string languageCode, string[] languageCodes);
 	}
 }

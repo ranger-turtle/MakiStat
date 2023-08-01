@@ -30,6 +30,8 @@ namespace MakiSeiBackend.ScribanEngine
 			try
 			{
 				string fileContent = File.ReadAllText(templatePath);
+				ScribanGenerationEngine instance = ScribanGenerationEngine.Instance;
+				instance.ModificationChecker.AddResourceToModificationChecking(instance.RelativeCurrentOutputPageFilePath, templatePath, fileContent);
 				if (templatePath.EndsWith(".sbn"))
 					return ObjectFunctions.Eval(context, callerSpan, fileContent)?.ToString() ?? string.Empty;
 				else
