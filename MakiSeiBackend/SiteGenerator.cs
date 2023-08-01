@@ -44,7 +44,9 @@ namespace MakiSeiBackend
 		public ILogger Logger { get; private set; }
 		public string MainPath { get; private set; } = "_main";
 		public string GlobalPath { get; private set; } = "_global";
+		public string OutputPath { get; private set; } = "output";
 		public Stack<string> TemplateStack { get; private set; } = new Stack<string>();
+		internal ModificationChecker ModificationChecker { get; private set; }
 
 		private readonly ITemplateEngine templateEngine;
 
@@ -52,7 +54,13 @@ namespace MakiSeiBackend
 		public SiteGenerator(ILogger logger)
 		{
 			Logger = logger;
+			ModificationChecker = new ModificationChecker() { OutputPath = OutputPath };
 			templateEngine = new ScribanEngine.ScribanGenerationEngine(this);
+		}
+
+		public SiteGenerator(ITemplateEngine templateEngine) : this(new FileLogger())
+		{
+			this.templateEngine = templateEngine;
 		}
 
 		/// <summary>
@@ -70,14 +78,17 @@ namespace MakiSeiBackend
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static string GenerateLanguageDirPath(string languageCode) => languageCode != "default" ? "/" + languageCode : null;
+		public static string GenerateLanguageDirPath(string languageCode) => languageCode != "default" ? "/" + languageCode : null;
 
+		//TODO write first unit test for this method
+		//TODO switch your logger to built-in logger
 		/// <summary>
 		/// Generates the static multilingual website.
 		/// </summary>
 		/// <param name="skeletonPath">Path to the skeleton HTML template.</param>
 		/// <param name="progressReporter">It passes the progress data to the UI.</param>
 		/// <exception cref="FileNotFoundException">It is thrown when the skeleton HTML file does not exists.</exception>
+		/// <remarks>Calling this method sets skeletonPath parameter as current directory.</remarks>
 		public void GenerateSite(string skeletonPath, IWebsiteGenerationProgressReporter progressReporter)
 		{
 			if (skeletonPath == null || skeletonPath == string.Empty)
@@ -92,6 +103,7 @@ namespace MakiSeiBackend
 
 			string skeletonFileName = Path.GetFileNameWithoutExtension(skeletonPath);
 			string skeletonHtml = File.ReadAllText($"{skeletonFileName}.html");
+			ModificationChecker.LoadModificationData(skeletonHtml);
 
 			string[] jsonLanguageFilePaths = Directory.GetFiles(Environment.CurrentDirectory, $"{skeletonFileName}*.json", SearchOption.TopDirectoryOnly);
 
@@ -125,16 +137,26 @@ namespace MakiSeiBackend
 										File.Exists($"{MainPath}/{Path.GetDirectoryName(relativeFilePath)}/{Path.GetFileNameWithoutExtension(pageFileName)}.{lc}.json"))
 										.ToArray();
 
-									string langFolder = currentLangCode == "default" ? string.Empty : $"/{currentLangCode}";
-									string rootDir = $"{outputDirectory}{langFolder}";
+									string langFolder = currentLangCode == "default" ? string.Empty : $"{currentLangCode}";
+									string rootDir = Path.Combine(outputDirectory, langFolder);
 									string destDir = Path.Combine(rootDir, Path.GetDirectoryName(relativeFilePath));
 									string fileDest = Path.Combine(destDir, $"{Path.GetFileNameWithoutExtension(relativeFilePath)}.html");
-									TemplateStack.Push(fileDest);
-									string generatedPage = templateEngine.GeneratePage(skeletonHtml, path, globalData, currentLangCode, availableLangCodes);
-									TemplateStack.Pop();
+									string pathForMc = Path.Combine(langFolder, Path.GetDirectoryName(relativeFilePath), $"{Path.GetFileNameWithoutExtension(relativeFilePath)}.html");
 
-									_ = Directory.CreateDirectory(destDir);
-									File.WriteAllText(fileDest, generatedPage);
+									ModificationChecker.AddResourceToModificationChecking(pathForMc, jsonFilePath, File.ReadAllText(jsonFilePath));
+									// This is always added which makes the program to always save mc data to the file. Therefore, it's needed to change this operation
+									// when the language-based optimization will be on progress
+
+									if (ModificationChecker.CheckIfPageIsNotModified(pathForMc, fileDest))
+									{
+										TemplateStack.Push(fileDest);
+										string generatedPage = templateEngine.GeneratePage(path, skeletonHtml, globalData, currentLangCode, availableLangCodes);
+										TemplateStack.Pop();
+
+										_ = Directory.CreateDirectory(destDir);
+										File.WriteAllText(fileDest, generatedPage);
+									}
+									ModificationChecker.RegisterPageForChecking(pathForMc);
 								}
 								catch (FileNotFoundException ex)
 								{
@@ -151,7 +173,8 @@ namespace MakiSeiBackend
 							File.Copy($"{MainPath}/{relativeFilePath}", $"{outputDirectory}/{relativeFilePath}", true);
 						}
 					}
-				}
+				}// end foreach
+				ModificationChecker.SaveLastWebsiteStateIfNeeded();
 			}
 		}
 	}

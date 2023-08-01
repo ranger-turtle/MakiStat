@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakiSei", "MakiSei\MakiSei.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakiSeiBackend", "MakiSeiBackend\MakiSeiBackend.csproj", "{AD5FA5A2-6758-4F5B-8821-B14C54BC6D86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakiSeiTest", "MakiSeiTest\MakiSeiTest.csproj", "{535A93AF-E7B6-4EB7-8130-B6813B61FBE5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{AD5FA5A2-6758-4F5B-8821-B14C54BC6D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD5FA5A2-6758-4F5B-8821-B14C54BC6D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD5FA5A2-6758-4F5B-8821-B14C54BC6D86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{535A93AF-E7B6-4EB7-8130-B6813B61FBE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{535A93AF-E7B6-4EB7-8130-B6813B61FBE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{535A93AF-E7B6-4EB7-8130-B6813B61FBE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{535A93AF-E7B6-4EB7-8130-B6813B61FBE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,7 @@ namespace MakiSei
 	{
 		public SiteGenerator SiteGenerator { get; private set; }
 
+		//I did not use async/await, since I do not know, how to call async GenerateSite after ShowDialog is called
 		private readonly BackgroundWorker backgroundWorker;
 		private readonly string skeletonPath;
 		private string currentPath;

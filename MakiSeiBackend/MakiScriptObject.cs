@@ -59,13 +59,18 @@ namespace MakiSeiBackend.ScribanEngine
 			}
 			_ = templateContext.PopGlobal();
 			instance.TemplatePathStack.Pop();
+			instance.ModificationChecker.AddResourceToModificationChecking(instance.RelativeCurrentOutputPageFilePath, templatePath, pageTemplate);
 			Trace.WriteLine("Pop");
 			return result;
 		}
 		private static void LoadPartialDataToScriptObject(string templatePath, string langCode, ScriptObject scriptObject)
 		{
-			string partialDataPath = $"{Path.GetDirectoryName(templatePath)}/{Path.GetFileNameWithoutExtension(templatePath)}.json";
-			Dictionary<string, object> partialData = JsonProcessor.ReadLangJSONModelFromJSONFile(partialDataPath, langCode);
+			string partialDataPathWithoutExt = $"{Path.GetDirectoryName(templatePath)}/{Path.GetFileNameWithoutExtension(templatePath)}";
+			string partialDataPath = $"{partialDataPathWithoutExt}.{langCode}.json";
+			Dictionary<string, object> partialData = JsonProcessor.ReadLangJSONModelFromJSONFile(partialDataPathWithoutExt, langCode);
+			string partialTextContent = File.ReadAllText($"{partialDataPathWithoutExt}.{langCode}.json");
+			ScribanGenerationEngine instance = ScribanGenerationEngine.Instance;
+			instance.ModificationChecker.AddResourceToModificationChecking(instance.RelativeCurrentOutputPageFilePath, partialDataPath, partialTextContent);
 			scriptObject["partial"] = partialData;
 		}
 
@@ -77,10 +82,13 @@ namespace MakiSeiBackend.ScribanEngine
 		/// <param name="scriptObject">Script object this method saves universal data to.</param>
 		public static void LoadUniversalModelToScriptObject(string modelPath, ScriptObject scriptObject)
 		{
-			modelPath = Path.GetDirectoryName(modelPath) + '/' + Path.GetFileNameWithoutExtension(modelPath) + ".json";
+			modelPath = Path.Combine(Path.GetDirectoryName(modelPath), $"{Path.GetFileNameWithoutExtension(modelPath)}.json");
 			if (File.Exists(modelPath))
 			{
 				Dictionary<string, object> universalModel = JsonProcessor.ReadJSONModelFromJSONFile(modelPath);
+				string jsonContent = File.ReadAllText(modelPath);
+				ScribanGenerationEngine instance = ScribanGenerationEngine.Instance;
+				instance.ModificationChecker.AddResourceToModificationChecking(instance.RelativeCurrentOutputPageFilePath, modelPath, jsonContent);
 				scriptObject["uni_model"] = universalModel;
 			}
 			else
@@ -149,6 +157,10 @@ namespace MakiSeiBackend.ScribanEngine
 
 				string langCode = ScribanGenerationEngine.Instance.LangCode;
 				Dictionary<string, object> model = multilingual ? JsonProcessor.ReadLangJSONModelFromJSONFile(modelPath, langCode) : JsonProcessor.ReadJSONModelFromJSONFile(modelPath);
+				string jsonPathForMC = Path.Combine(Path.GetDirectoryName(modelPath), $"{Path.GetFileNameWithoutExtension(modelPath)}");
+				jsonPathForMC += $"{(multilingual ? $".{langCode}" : string.Empty)}.json";
+				string jsonContent = File.ReadAllText(jsonPathForMC);
+				instance.ModificationChecker.AddResourceToModificationChecking(instance.RelativeCurrentOutputPageFilePath, jsonPathForMC, jsonContent);
 
 				return model;
 			}
@@ -164,7 +176,7 @@ namespace MakiSeiBackend.ScribanEngine
 		public static string LoadLangPageUrl(string langCode)
 		{
 			ScribanGenerationEngine engine = ScribanGenerationEngine.Instance;
-			string pagePath = engine.CurrentPageFile;
+			string pagePath = engine.CurrentPageTemplateFilePath;
 			pagePath = pagePath[pagePath.Replace('\\','/'). IndexOf('/')..];
 			return $"{SiteGenerator.GenerateLanguageDirPath(langCode)}{pagePath}";
 		}
