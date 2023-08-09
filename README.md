@@ -22,7 +22,7 @@ MakiSei fills pages with data stored in JSON files.
 MakiSei is also a framework providing separation the information exclusive to particular
 pages and information used in multiple pages. In general, it supports the structure consisting
 of the skeleton.html file which is the main template used for all the pages on the website and
-_global and _main folders which store templates and the data. MakiSei generates pages in the
+```_global``` and ```_main``` folders which store templates and the data. MakiSei generates pages in the
 predefined output folder which has to be in the same folder as skeleton and the website in 
 the default language is placed directly in the output folder. Language versions are placed in subfolders
 and their structure is generally the same as the default language website.
@@ -51,7 +51,7 @@ Generated website can be manually published to the traditional hosting services.
 
 ## Framework
 
-The data and the templates need to be organized in the two folders: _global and _main.
+The data and the templates need to be organized in the two folders: ```_global``` and ```_main```.
 Only files which can be outside are the skeleton.html which store the main layout of all of the pages
 and .json files of the same name which contain elementary data (such as strings and numbers)
 meant to be put to the skeleton template.
@@ -75,14 +75,15 @@ Folder intended to store templates and data used in multiple pages and not relat
 ### ```_main``` folder
 
 Folder indented to store website source files which directly represent specific pages. Page
-templates can read partials and data from both _global and _main folders, although it is a good practice to
-put the data not being a part of the specific page to be put in _global folder. The folder structure in
-this folder is mostly mirrored in the output folder. MakiSei seeks page templates only in this folder.
+templates can read partials and data from both ```_global``` and ```_main``` folders, although it is a good
+practice to put the data not being a part of the specific page to be put in ```_global``` folder.
+The folder structure in this folder is mostly mirrored in the output folder. MakiSei seeks page templates
+only in this folder.
 
 ### ```output``` folder
 
 Folder intended to be destination point of the website. The output has almost exactly the same folder
-structure as _main folder. Only difference is the presence of folders named after language codes which
+structure as ```_main``` folder. Only difference is the presence of folders named after language codes which
 store the same website in different languages.
 
 ## Source file types
@@ -110,7 +111,7 @@ This is also the entry point for MakiSei from where it starts the generation of 
 
 #### Page template
 
-Template representing the actual page expected to be in the output. They can be put only in _main folder,
+Template representing the actual page expected to be in the output. They can be put only in ```_main``` folder,
 since MakiSei seeks for these templates only in that folder. Its name must not begin with ```_``` character,
 since MakiSei recognizes such files as partials and does not process them like the pages.
 
@@ -144,7 +145,7 @@ page ```kitchen.html``` need to have name ```kitchen.json```.
 
 Data which always are the same in all of the language versions of the same page but still specific to
 that one. They have simple ```.json``` extension. Data meant to be stored in such files are file paths,
-numbers, URLs, data used for scripts etc.
+numbers, URLs, data used for scripts etc. They can be used only with page templates.
 
 #### Language version variable data files
 
@@ -158,12 +159,12 @@ and has to be in the same folder. However, if there is ```index.pl.json``` file 
 same page in different language version will be generated to ```output/pl/index.html```.
 
 Presence of language JSON files for skeleton template determines what language versions will be generated.
-For example, if there are some ```pl.[lang_code].json``` in _main folder, but the
+For example, if there are some ```pl.[lang_code].json``` in the ```_main``` folder, but the
 ```_skeleton.pl.json``` file is absent, language version with ```pl``` code will not be generated.
 
 If the version language JSON file for skeleton is available but some web page does not have equivalent
 template, the page in that specific language version will not be generated e.g. when the
-```_skeleton.pl.json```_ file exists, but the ```exclusive.pl.json``` does not, the ```exclusive.html```
+```_skeleton.pl.json``` file exists, but the ```exclusive.pl.json``` does not, the ```exclusive.html```
 page in version associated with ```pl``` language code will not be generated and the right warning will
 be printed in ```website.log``` file placed in the root of the website blueprint.
 
@@ -239,7 +240,7 @@ This object is scoped to the partial.
 It processes the page template and renders its section of the name passed through parameter
 ```section_name```. It must be called only on skeleton template.
 
-- ```template_name```: string containing path to the page template. .html extension is added automatically.
+- ```template_name```: string containing path to the page template. ```.html``` extension is added automatically.
 - ```section_name```: string containing section declared in the page template.
 
 __Returns__: processed section of the page.
@@ -288,6 +289,17 @@ It can be useful for generating paths in the list of the same page in available 
 
 __Returns__: path to the page in language version associated with given language code.
 
+## Website generation algorithm
+
+First, it reads the ```skeleton.html``` file which is the starting point for MakiSei. For each skeleton language data file,
+it downloads global data specific for the language of code saved in the file extension.
+For each page which is not generated, to which one of the needed resources have been modified
+before or is not registered in ```check.msmc```, the page is generated.
+MakiSei recognizes ```html``` files as page templates as long as their names do not begin
+with underscore. First, the data from the page are inserted into the skeleton.
+After that, data from partials and JSON files referred in the page templates and
+the partials are processed and put to the page in the memory. If the page processing is successful,
+its contents are saved to the file. If some error occurs, entire generation process is stopped.
 
 ## Tutorial
 
@@ -300,7 +312,7 @@ Nextly, create three folders: ```_global```, ```_main``` and ```output```.
 
 ### Skeleton
 
-Create _skeleton.html in the same folder. Fill it with this code:
+Create ```_skeleton.html``` in the same folder. Fill it with this code:
 
 ```html {.line-numbers}
 <!DOCTYPE html>
@@ -348,7 +360,7 @@ themselves can nests partials.
 After MakiSei read the skeleton, it reads and processes each page template which needs to be
 in ```_main``` folder and its name cannot begin with underscore, since templates with such names
 are recognized as partials. For more information, how the pages are processed,
-see [this chapter](#Website-generation-algorithm).
+see [this chapter](#website-generation-algorithm).
 
 Code written as value of ```lang``` attribute is replaced by MakiSei with the value of
 ```lang_code``` which stores current language code which was read from the first member of
@@ -671,7 +683,7 @@ in each iteration. This is another situation, where language-independent data fi
 have the same value, no matter of the processed language and it might be changed in future.
 These values can be directly embedded into template script but it would be not really convenient.
 
-Thanks to ```load_model```, you can use data JSON can be used as the database substitute, but without
+Thanks to ```load_model```, you can use data JSON files as the database substitute, but without
 automated consistency and validation.
 
 ### Polish version of the website
@@ -689,3 +701,7 @@ manually to the output. Fortunately, you can copy stylesheets from demo.
 
 Now the website is ready for generation! Only things you need to do is to launch MakiSei, click Search
 button, choose ```_skeleton.html``` file and click Generate! button. Your website is generated!
+
+> **Note** <br>
+> The good news is that MakiSei is intelligent and does not generate pages when resources used
+> for generation such pages are not changed.
