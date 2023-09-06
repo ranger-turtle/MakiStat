@@ -17,7 +17,6 @@ namespace MakiSeiBackend
 	}
 
 	//TODO Support JSON syntax errors
-	//TODO Add modification checking to avoid re-rendering unchanged pages
 	//BONUS add choosing to render part of the website
 	/// <summary>
 	/// Main component of the MakiSei Static Site Generator. It mediates between the UI and the template engine.
@@ -80,7 +79,6 @@ namespace MakiSeiBackend
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string GenerateLanguageDirPath(string languageCode) => languageCode != "default" ? "/" + languageCode : null;
 
-		//TODO write first unit test for this method
 		//TODO switch your logger to built-in logger
 		/// <summary>
 		/// Generates the static multilingual website.
@@ -143,16 +141,14 @@ namespace MakiSeiBackend
 									string fileDest = Path.Combine(destDir, $"{Path.GetFileNameWithoutExtension(relativeFilePath)}.html");
 									string pathForMc = Path.Combine(langFolder, Path.GetDirectoryName(relativeFilePath), $"{Path.GetFileNameWithoutExtension(relativeFilePath)}.html");
 
-									ModificationChecker.AddResourceToModificationChecking(pathForMc, jsonFilePath, File.ReadAllText(jsonFilePath));
-									// This is always added which makes the program to always save mc data to the file. Therefore, it's needed to change this operation
-									// when the language-based optimization will be on progress
-
 									if (ModificationChecker.CheckIfPageIsNotModified(pathForMc, fileDest))
 									{
 										TemplateStack.Push(fileDest);
 										string generatedPage = templateEngine.GeneratePage(path, skeletonHtml, globalData, currentLangCode, availableLangCodes);
 										TemplateStack.Pop();
 
+										ModificationChecker.AddResourceToModificationChecking(pathForMc, jsonFilePath, File.ReadAllText(jsonFilePath));
+										//I have place above statement here, since it will not be reached when exception is thrown
 										_ = Directory.CreateDirectory(destDir);
 										File.WriteAllText(fileDest, generatedPage);
 									}
