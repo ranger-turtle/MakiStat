@@ -21,7 +21,7 @@ MakiSei fills pages with data stored in JSON files.
 
 MakiSei is also a framework providing separation the information exclusive to particular
 pages and information used in multiple pages. In general, it supports the structure consisting
-of the skeleton.html file which is the main template used for all the pages on the website and
+of the ```skeleton.html``` file which is the main template used for all the pages on the website and
 ```_global``` and ```_main``` folders which store templates and the data. MakiSei generates pages in the
 predefined output folder which has to be in the same folder as skeleton and the website in 
 the default language is placed directly in the output folder. Language versions are placed in subfolders
