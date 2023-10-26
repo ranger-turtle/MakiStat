@@ -1,36 +1,36 @@
-﻿# MakiSei
+﻿# MakiStat
 
 <img align="right" width="160px" height="160px" src="MakiSei/MakiSei icon.ico">
 
-MakiSei is an application and a template-based framework designed for generating small yet
+MakiStat is an application and a template-based framework designed for generating small yet
 expanding multilingual websites. It requires relatively minimal technical knowledge
 and does not require any initial configuration to run it.
 
 > **Warning** <br>
-> This documentation covers the beta version of the MakiSei and its features may be changed in the future.
+> This documentation covers the beta version of the MakiStat and its features may be changed in the future.
 
 ## General
 
-MakiSei is a static site generator designed for developing small-scale websites in multiple
-languages and using data occuring in multiple places. MakiSei uses HTML templates
+MakiStat is a static site generator designed for developing small-scale websites in multiple
+languages and using data occuring in multiple places. MakiStat uses HTML templates
 powered by Scriban template engine which provides full-fledged programming language ([see this repository
 for more info](https://github.com/scriban/scriban)).
 Thanks to it, templates can be written like HTML with embedded back-end code but the
 output pages have fixed content and cannot be randomized unless the JavaScript is included.
-MakiSei fills pages with data stored in JSON files.
+MakiStat fills pages with data stored in JSON files.
 
-MakiSei is also a framework providing separation the information exclusive to particular
+MakiStat is also a framework providing separation the information exclusive to particular
 pages and information used in multiple pages. In general, it supports the structure consisting
 of the ```skeleton.html``` file which is the main template used for all the pages on the website and
-```_global``` and ```_main``` folders which store templates and the data. MakiSei generates pages in the
+```_global``` and ```_main``` folders which store templates and the data. MakiStat generates pages in the
 predefined output folder which has to be in the same folder as skeleton and the website in 
 the default language is placed directly in the output folder. Language versions are placed in subfolders
 and their structure is generally the same as the default language website.
-MakiSei cannot directly handle non-HTML resources (such as CSS, scripts and images)
+MakiStat cannot directly handle non-HTML resources (such as CSS, scripts and images)
 and you need to store them in the output folder and maintain them separately,
 using already generated website.
 
-MakiSei can be used for websites which are expected to be slightly expanded in the future
+MakiStat can be used for websites which are expected to be slightly expanded in the future
 and use relatively little data of the same kind they would be included in database, where
 maintenance of the database and the CMS would be too cumbersome and expensive.
 Data can be stored in JSON files and used by multiple pages, although it is up to
@@ -38,12 +38,12 @@ the author how they should be organized. It can be also used for making mock-ups
 larger-scale websites before designing and deploying the database and other complex
 web technologies.
 
-MakiSei application itself is very easy to use since it is an ordinary desktop application
+MakiStat application itself is very easy to use since it is an ordinary desktop application
 and once the structure of the website and the data have been already created, the website can
 be generated in two simple steps.
 
 Writing the structure itself require only the basics of programming and JSON syntax and
-you do not need to know any other frameworks. MakiSei does not give any ready layout which you
+you do not need to know any other frameworks. MakiStat does not give any ready layout which you
 have to modify for your needs what would be difficult when your layout needs to be very different
 from the provided.
 
@@ -66,7 +66,7 @@ meant to be put to the skeleton template.
 └── _skeleton.default.json
 ```
 
-If you want to learn on how to write your first website for MakiSei, go to [tutorial section](#Tutorial).
+If you want to learn on how to write your first website for MakiStat, go to [tutorial section](#Tutorial).
 
 ### ```_global``` folder
 
@@ -77,7 +77,7 @@ Folder intended to store templates and data used in multiple pages and not relat
 Folder indented to store website source files which directly represent specific pages. Page
 templates can read partials and data from both ```_global``` and ```_main``` folders, although it is a good
 practice to put the data not being a part of the specific page to be put in ```_global``` folder.
-The folder structure in this folder is mostly mirrored in the output folder. MakiSei seeks page templates
+The folder structure in this folder is mostly mirrored in the output folder. MakiStat seeks page templates
 only in this folder.
 
 ### ```output``` folder
@@ -94,30 +94,30 @@ There are several types of file making up the "blueprint" of the final static we
 
 Templates contain HTML and Scriban code. Scriban provides full-featured programming language
 which can be used for embedding PHP or Razor-like scripts providing non-standard ways to handle
-content meant to be put in output pages. MakiSei template engine can, besides putting data itself,
+content meant to be put in output pages. MakiStat template engine can, besides putting data itself,
 read data from other JSON files and render the content as it would be preprocessed with
 back-end code by a web server. They must always have the ```.html``` extension.
 
 #### Skeleton
 
 This is the the skeleton layout template of every page in the website. It contains HTML elements used in every
-page and has references to the sections written in page templates. MakiSei inserts the processed page
+page and has references to the sections written in page templates. MakiStat inserts the processed page
 sections in place of these references. Simple language-variable data are read from
 language-variable json files of the same name. There can be exactly one skeleton in whole structure,
 needs to have the name ```_skeleton.html``` and must be placed in the same folder as
 three framework folders.
 
-This is also the entry point for MakiSei from where it starts the generation of the website.
+This is also the entry point for MakiStat from where it starts the generation of the website.
 
 #### Page template
 
 Template representing the actual page expected to be in the output. They can be put only in ```_main``` folder,
-since MakiSei seeks for these templates only in that folder. Its name must not begin with ```_``` character,
-since MakiSei recognizes such files as partials and does not process them like the pages.
+since MakiStat seeks for these templates only in that folder. Its name must not begin with ```_``` character,
+since MakiStat recognizes such files as partials and does not process them like the pages.
 
-If it is placed in the subfolder chain, MakiSei generates the same subfolder chain and puts the page as
+If it is placed in the subfolder chain, MakiStat generates the same subfolder chain and puts the page as
 is placed in ```_main``` folder. The name of the page is also the same as its page template.
-For example, MakiSei generates page ```_main/blogs/kitchen.html``` to the destination
+For example, MakiStat generates page ```_main/blogs/kitchen.html``` to the destination
 ```output/blogs/kitchen.html```.
 
 Pages are divided into multiple user-defined sections put to the different places in the skeleton.
@@ -129,13 +129,13 @@ such as image paths.
 #### Partial
 
 Partial is a template for the part of the page and cannot be used as standalone page template itself.
-Its name must begin from underscore character to be skipped by MakiSei during website generation and not
+Its name must begin from underscore character to be skipped by MakiStat during website generation and not
 treated as the output page. The good practice is to place partials in the ```_global``` folder,
 since they are not intended to be the part of only one page.
 
 ### Data files
 
-Data are saved in JSON files and loaded to the pages by the MakiSei. They represent simple and sometimes
+Data are saved in JSON files and loaded to the pages by the MakiStat. They represent simple and sometimes
 translateable data which differ across pages and their language versions.
 They must always have ```.json``` extension and have the same name as the template if they are
 associated with and placed in the same folder e.g. language-independent data loaded to the
@@ -174,11 +174,11 @@ Data files not associated with specific template. They are meant to store inform
 templates and can be loaded using function ```load_model```. They can be named in any way, although it is
 recommended to be placed in the ```_global``` folder.
 
-## MakiSei-only variables and functions
+## MakiStat-only variables and functions
 
-Most features of the MakiSei API are provided by the Scriban template engine which is a third-party
+Most features of the MakiStat API are provided by the Scriban template engine which is a third-party
 API and its documentation is available at https://github.com/scriban/scriban#documentation . That is why this
-section covers API features exclusive to MakiSei. They are defined using tools provided by Scriban.
+section covers API features exclusive to MakiStat. They are defined using tools provided by Scriban.
 
 ### Variables
 
@@ -291,11 +291,11 @@ __Returns__: path to the page in language version associated with given language
 
 ## Website generation algorithm
 
-First, it reads the ```skeleton.html``` file which is the starting point for MakiSei. For each skeleton language data file,
+First, it reads the ```skeleton.html``` file which is the starting point for MakiStat. For each skeleton language data file,
 it downloads global data specific for the language of code saved in the file extension.
 For each page which is not generated, to which one of the needed resources have been modified
 before or is not registered in ```check.msmc```, the page is generated.
-MakiSei recognizes ```html``` files as page templates as long as their names do not begin
+MakiStat recognizes ```html``` files as page templates as long as their names do not begin
 with underscore. First, the data from the page are inserted into the skeleton.
 After that, data from partials and JSON files referred in the page templates and
 the partials are processed and put to the page in the memory. If the page processing is successful,
@@ -303,11 +303,11 @@ its contents are saved to the file. If some error occurs, entire generation proc
 
 ## Tutorial
 
-This tutorial is written for the MakiSei beginners but already familiar with HTML and Scriban language.
+This tutorial is written for the MakiStat beginners but already familiar with HTML and Scriban language.
 
 ### Creating main folders
 
-First, choose your folder where you want to create wesbite blueprint for MakiSei.
+First, choose your folder where you want to create wesbite blueprint for MakiStat.
 Nextly, create three folders: ```_global```, ```_main``` and ```output```.
 
 ### Skeleton
@@ -357,15 +357,15 @@ in the output page. The content can be read from data saved in JSON files or ent
 processed from child templates. Skeleton nests sections saved in page templates and the page templates
 themselves can nests partials.
 
-After MakiSei read the skeleton, it reads and processes each page template which needs to be
+After MakiStat read the skeleton, it reads and processes each page template which needs to be
 in ```_main``` folder and its name cannot begin with underscore, since templates with such names
 are recognized as partials. For more information, how the pages are processed,
 see [this chapter](#website-generation-algorithm).
 
-Code written as value of ```lang``` attribute is replaced by MakiSei with the value of
+Code written as value of ```lang``` attribute is replaced by MakiStat with the value of
 ```lang_code``` which stores current language code which was read from the first member of
 compound extension of one of ```_skeleton.[lang code].json``` files which store language-dependent
-data scoped to all templates in the project. If its value is ```default```, MakiSei puts ```en```
+data scoped to all templates in the project. If its value is ```default```, MakiStat puts ```en```
 value here, since in this tutorial, English is default language of the website and the version in such
 language will be put in the root folder. Other language versions are put in subfolders whose name will
 be exactly the same as their language codes.
@@ -426,7 +426,7 @@ Language-variable data files should have generally the same set of properties, a
 or missing properties are acceptable as long as the template code will handle these non-standard cases.
 
 Data from one of the ```_skeleton.[lang code].json``` files is written to the ```global``` global
-variable by MakiSei. The order of languages the MakiSei processes depends of the order of file names read
+variable by MakiStat. The order of languages the MakiStat processes depends of the order of file names read
 from file system.
 
 ### Template of the index page
@@ -445,7 +445,7 @@ Fill it with this code:
 First line of source code declares ```main``` section and the content before line containing ```end```
 will be rendered in place of ```{{- load_page page_file 'main' ~}}``` line code in ```_skeleton.html```.
 Sections are not mandatory and can be skipped, like ```stylesheet``` section in this example. When
-section is not declared, MakiSei will leave empty place.
+section is not declared, MakiStat will leave empty place.
 
 ### Default language data file specific to index page
 
@@ -493,7 +493,7 @@ These pages use additional stylesheet and that's why ```stylesheets``` section i
 ### Partial templates
 
 Create ```_recipe.html``` partial template in the ```_global``` folder.
-Although MakiSei does not seek this folder for the pages, it is still good to put trailing underscore
+Although MakiStat does not seek this folder for the pages, it is still good to put trailing underscore
 in the partial file name to avoid confusion with page templates. Fill this file with this content:
 
 ```html
@@ -593,7 +593,7 @@ when the website needs to be in many languages. And the path cannot be directly 
 is loaded from single file but used by multiple page templates. That is why you need to create
 ```fizzy.json```, ```sandwich.json``` and ```orange_rice.json``` files which store information
 which are language-independent but they still exclusive to the page, although they are meant to put to
-the templates other than page templates MakiSei loads these data to them first. These data are loaded
+the templates other than page templates MakiStat loads these data to them first. These data are loaded
 to ```uni_page``` global object and they need to be passed to ```uni_model``` parameter. Fill them: 
 
 ```fizzy.json```:
@@ -694,14 +694,14 @@ same folder. You can copy them from demo which you can download from repository.
 
 ### CSS stylesheets and scripts
 
-MakiSei is designed to handle HTML code only and therefore, you need to put stylesheets and scripts
+MakiStat is designed to handle HTML code only and therefore, you need to put stylesheets and scripts
 manually to the output. Fortunately, you can copy stylesheets from demo.
 
 ### Generating the website
 
-Now the website is ready for generation! Only things you need to do is to launch MakiSei, click Search
+Now the website is ready for generation! Only things you need to do is to launch MakiStat, click Search
 button, choose ```_skeleton.html``` file and click Generate! button. Your website is generated!
 
 > **Note** <br>
-> The good news is that MakiSei is intelligent and does not generate pages when resources used
+> The good news is that MakiStat is intelligent and does not generate pages when resources used
 > for generation such pages are not changed.
