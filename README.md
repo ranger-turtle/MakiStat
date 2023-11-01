@@ -1,6 +1,6 @@
 ﻿# MakiStat
 
-<img align="right" width="160px" height="160px" src="MakiSei/MakiStat icon.ico">
+<img align="right" width="160px" height="160px" src="MakiStat icon.ico">
 
 MakiStat is an application and a template-based framework designed for generating small yet
 expanding multilingual websites. It requires relatively minimal technical knowledge

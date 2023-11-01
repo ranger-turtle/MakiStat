@@ -7,7 +7,7 @@
     <Version>0.0.1</Version>
     <Company />
     <Authors>Paweł Oziomek</Authors>
-    <ApplicationIcon>MakiSei icon.ico</ApplicationIcon>
+    <ApplicationIcon>..\MakiStat icon.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
