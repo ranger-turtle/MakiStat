@@ -1,5 +1,5 @@
-﻿namespace MakiSeiBackend
-{
+﻿namespace MakiStatBackend;
+
 	/// <summary>
 	/// Interface for the components communicating with UI.
 	/// </summary>
@@ -12,4 +12,3 @@
 		/// <param name="pagePath">Page path to be displayed in UI.</param>
 		void ReportProgress(int progress, string pagePath);
 	}
-}

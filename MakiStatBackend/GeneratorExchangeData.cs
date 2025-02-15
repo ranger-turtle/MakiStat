@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace MakiSeiBackend
-{
+namespace MakiStatBackend;
+
 	internal class GeneratorExchangeData
 	{
 		public ILogger Logger { get; private set; }
@@ -9,4 +9,3 @@ namespace MakiSeiBackend
 		public string GlobalPath { get; private set; } = "_global";
 		public Stack<string> TemplateStack { get; private set; }
 	}
-}

@@ -5,15 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
-namespace MakiSeiBackend.ScribanEngine
-{
-	/// <summary>
-	/// Functions which can be called in Scriban-based templates for MakiSei.
-	/// They use ScriptObjects which store data the templates refer to.
-	/// </summary>
-	internal class MakiScriptObject
+namespace MakiStatBackend.ScribanEngine;
+
+/// <summary>
+/// Functions which can be called in Scriban-based templates for MakiSei.
+/// They use ScriptObjects which store data the templates refer to.
+/// </summary>
+internal class MakiScriptObject
 	{
 		private static ScriptObject GenerateScriptObject()
 		{
@@ -181,4 +180,3 @@ namespace MakiSeiBackend.ScribanEngine
 			return $"{SiteGenerator.GenerateLanguageDirPath(langCode)}{pagePath}";
 		}
 	}
-}

@@ -5,10 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace MakiSeiBackend
-{
+namespace MakiStatBackend;
+
 	/*BONUS Optimize checker to make language based hierarchy of resources where language specific resources can be stored 
 	 separately to discard them easily when language-specific skeleton data will be changed*/
 	/*TODO fix the bug making registering multiple instances of the same resource whose paths differ only with the case of some letters (standard library does not have
@@ -242,4 +241,3 @@ namespace MakiSeiBackend
 			return hash;
 		}
 	}
-}

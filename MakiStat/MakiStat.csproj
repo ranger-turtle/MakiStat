@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MakiSeiBackend\MakiSeiBackend.csproj" />
+    <ProjectReference Include="..\MakiStatBackend\MakiStatBackend.csproj" />
   </ItemGroup>
 
 </Project>

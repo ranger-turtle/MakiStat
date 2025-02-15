@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace MakiSeiBackend
-{
+namespace MakiStatBackend;
+
 	public interface ITemplateEngine
 	{
 		/// <summary>
@@ -12,4 +12,3 @@ namespace MakiSeiBackend
 		/// <returns>Generated page</returns>
 		string GeneratePage(string htmlPagePath, string skeletonHtml, Dictionary<string, object> globalData, string languageCode, string[] languageCodes);
 	}
-}

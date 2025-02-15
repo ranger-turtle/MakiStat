@@ -1,12 +1,12 @@
 ﻿#define RELEASE
 
-using MakiSeiBackend;
+using MakiStatBackend;
 using Microsoft.Win32;
 using System;
 using System.Windows;
 
-namespace MakiSei
-{
+namespace MakiStat;
+
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
@@ -46,4 +46,3 @@ namespace MakiSei
 			}
 		}
 	}
-}

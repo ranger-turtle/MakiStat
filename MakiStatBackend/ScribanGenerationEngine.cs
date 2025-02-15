@@ -1,15 +1,16 @@
-﻿using Scriban;
+﻿using MakiStatBackend.ScribanEngine;
+using Scriban;
 using Scriban.Runtime;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace MakiSeiBackend.ScribanEngine
-{
-	/// <summary>
-	/// Exception meant to be raised when duplicate Singleton object was going to occur.
-	/// </summary>
-	public class DuplicateObjectException : System.Exception { public DuplicateObjectException() : base("Tried to make duplicate object meant to be Singleton.") { } }
+namespace MakiStatBackend;
+
+/// <summary>
+/// Exception meant to be raised when duplicate Singleton object was going to occur.
+/// </summary>
+public class DuplicateObjectException : System.Exception { public DuplicateObjectException() : base("Tried to make duplicate object meant to be Singleton.") { } }
 
 	/// <summary>
 	/// Generation engine working on Scriban-based templates.
@@ -117,4 +118,3 @@ namespace MakiSeiBackend.ScribanEngine
 			return result;
 		}
 	}
-}

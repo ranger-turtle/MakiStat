@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace MakiSeiBackend
-{
+namespace MakiStatBackend;
+
 
 	/// <summary>
 	/// Taken from https://josef.codes/custom-dictionary-string-object-jsonconverter-for-system-text-json/ 
@@ -102,4 +102,3 @@ namespace MakiSeiBackend
 			}
 		}
 	}
-}

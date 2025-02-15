@@ -1,7 +1,7 @@
-﻿<Application x:Class="MakiSei.App"
+﻿<Application x:Class="MakiStat.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:MakiSei"
+             xmlns:local="clr-namespace:MakiStat"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

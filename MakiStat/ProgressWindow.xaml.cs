@@ -1,10 +1,10 @@
-﻿using MakiSeiBackend;
+﻿using MakiStatBackend;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
-namespace MakiSei
-{
+namespace MakiStat;
+
 	/// <summary>
 	/// Interaction logic for ProgressWindow.xaml
 	/// </summary>
@@ -65,4 +65,3 @@ namespace MakiSei
 			}
 		}
 	}
-}

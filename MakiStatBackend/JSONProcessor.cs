@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace MakiSeiBackend
-{
+namespace MakiStatBackend;
+
 	public class LanguageJsonNotFoundException : Exception {
 		public LanguageJsonNotFoundException(string message) : base(message) { }
 	}
@@ -39,4 +39,3 @@ namespace MakiSeiBackend
 			return ReadJSONModelFromJSONFile(finalJsonPath);
 		}
 	}
-}

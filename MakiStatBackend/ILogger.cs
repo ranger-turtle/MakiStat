@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MakiSeiBackend
-{
+namespace MakiStatBackend;
+
 	public interface ILogger : IDisposable
 	{
 		void Open(string path = "website.log");
@@ -10,4 +10,3 @@ namespace MakiSeiBackend
 		void Warning(Stack<string> templatePathStack, string message);
 		void Error(Stack<string> templatePathStack, string message);
 	}
-}
