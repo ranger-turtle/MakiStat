@@ -9,7 +9,7 @@ using System.IO;
 namespace MakiStatBackend.ScribanEngine;
 
 /// <summary>
-/// Functions which can be called in Scriban-based templates for MakiSei.
+/// Functions which can be called in Scriban-based templates for .
 /// They use ScriptObjects which store data the templates refer to.
 /// </summary>
 internal class MakiScriptObject
